@@ -102,14 +102,17 @@ def temporalEvaluation():
         TP = [results[el]["Confusion Matrix"][1][1] for el in results.keys()]
         P  = [results[el]["Confusion Matrix"][1][1] + results[el]["Confusion Matrix"][1][0] for el in results.keys()]
         F1 = [results[el]["Fscore"][-1] for el in results.keys()]
+    nSamples = len(results)
 
+
+    x = np.linspace(0,nSamples,nSamples)
 
     plt.figure(1)
-    plt.plot(TP)
-    plt.plot(P)
+    plt.fill_between(x,0,P,facecolor='green')
+    plt.fill_between(x,0,TP,facecolor='blue')
     for key in ev.highwayEvents.keys():
         plt.plot((key-1200,key-1200),(0,max(P)),'r-')
-        plt.text(key-1205, 0.8*max(P), ev.highwayEvents[key], rotation=90)
+        plt.text(key-1205, -0.5 , ev.highwayEvents[key], rotation=30)
 
     plt.show()
 
@@ -120,9 +123,6 @@ def temporalEvaluation():
         plt.text(key-1205, 0.8, ev.highwayEvents[key], rotation=90)
 
     plt.show()
-
-
-
 
 
 if __name__ == "__main__":
