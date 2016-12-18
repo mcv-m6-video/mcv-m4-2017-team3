@@ -10,6 +10,8 @@ queryImgPrefix = "test_A_"
 # Results logging
 outputFolder = "./results/"
 outputFile = outputFolder + queryImgPrefix + "results.json"
+outputFileDelay = outputFolder + queryImgPrefix + "delayResults.json"
+
 
 # The highway labels, as they are defined in the gt.
 highwayLabelsInv = dict()
