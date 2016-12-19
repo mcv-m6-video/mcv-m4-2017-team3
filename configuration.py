@@ -50,8 +50,12 @@ highwayBinaryMapping1.update({"Classes":2})
 highwayMapping = highwayBinaryMapping1
 
 
-# Optical Flow variables 
+# Optical Flow variables
 gtOFFolder = "./datasets/Optical_Flow/gt/"
 imagesOFFolder = "./datasets/Optical_Flow/images/"
 imagesOF = ["000045_10", "000157_10"]
 resultsOFFolder = "./results/resultsOF/"
+
+# Optical flow visualization variables
+OFSquareSize = pow(2,6)
+nBins = 9

@@ -104,6 +104,100 @@ def opticalFlowMetrics():
         cv2.waitKey(0)
 
 
+def drawOverlayRegion(img,opticalFlow,topLeft,bottomRight):
+    nBins = conf.nBins
+    x = topLeft[0]
+    y = topLeft[1]
+
+    region = opticalFlow[y:y+conf.OFSquareSize,x:x+conf.OFSquareSize,:]
+
+    regionU = region[:,:,1]
+    regionV = region[:,:,2]
+
+    histogram = []
+
+    u = np.less(regionU,32)
+    v = np.less(regionV,32)
+    histogram.append(sum(sum(np.bitwise_and(u,v))))
+
+    u = np.greater_equal(regionU,128)
+    v = np.greater_equal(regionV,128)
+    histogram.append(sum(sum(np.bitwise_and(np.bitwise_and(u,v),np.greater_equal(v,u)))))
+    histogram.append(sum(sum(np.bitwise_and(np.bitwise_and(u,v),np.less(v,u)))))
+
+    v = np.bitwise_and(np.less(regionV,128),np.greater_equal(regionV,32))
+    histogram.append(sum(sum(np.bitwise_and(np.bitwise_and(u,v),np.less(v,u)))))
+    histogram.append(sum(sum(np.bitwise_and(np.bitwise_and(u,v),np.greater_equal(v,u)))))
+
+    u = np.bitwise_and(np.less(regionU,128),np.greater_equal(regionU,32))
+    histogram.append(sum(sum(np.bitwise_and(np.bitwise_and(u,v),np.greater_equal(v,u)))))
+    histogram.append(sum(sum(np.bitwise_and(np.bitwise_and(u,v),np.less(v,u)))))
+
+    v = np.greater_equal(regionV,128)
+    histogram.append(sum(sum(np.bitwise_and(np.bitwise_and(u,v),np.less(v,u)))))
+    histogram.append(sum(sum(np.bitwise_and(np.bitwise_and(u,v),np.greater_equal(v,u)))))
+
+    histosum = sum(histogram)
+    histogram = [255*(float(el)/histosum) for el in histogram]
+
+    cv2.rectangle(img,topLeft,bottomRight,(255,255,255))
+    radius = ((bottomRight[0] - topLeft[0])/2,(bottomRight[1] - topLeft[1])/2)
+    center = (topLeft[0] + radius[0], topLeft[1] + radius[1])
+    smallRadius = radius[0]/3
+    bigRadius = 2*radius[0]/3
+
+
+    for i in range(0,nBins-1):
+        cv2.ellipse(img,tuple(center),(bigRadius,bigRadius),0,startAngle=i*360/(nBins-1), endAngle=(i+1)*360/(nBins-1), color = (0,0,histogram[i+1]),thickness = -1)
+    cv2.circle(img,tuple(center),radius[0]/3,(0,0,histogram[0]),-1)
+    for i in range(0,nBins-1):
+        pt1 = (int(smallRadius*np.cos(np.deg2rad(i*360/(nBins-1)))),int(smallRadius*np.sin(np.deg2rad(i*360/(nBins-1)))))
+        pt1 = (pt1[0] + center[0],pt1[1] + center[1])
+        pt2 = (int(bigRadius*np.cos(np.deg2rad(i*360/(nBins-1)))),int(bigRadius*np.sin(np.deg2rad(i*360/(nBins-1)))))
+        pt2 = (pt2[0] + center[0],pt2[1] + center[1])
+        cv2.line(img,pt1,pt2,(255,255,255))
+    cv2.circle(img,tuple(center),smallRadius,(255,255,255))
+    cv2.circle(img,tuple(center),bigRadius,(255,255,255))
+
+def drawOverlay(img,opticalFlow):
+    vRange = range(0,img.shape[0],conf.OFSquareSize)
+    hRange = range(0,img.shape[1],conf.OFSquareSize)
+
+    for h in hRange:
+        for v in vRange:
+            topLeft = (h,v)
+            bottomRight = (h+conf.OFSquareSize,v+conf.OFSquareSize)
+            drawOverlayRegion(img,opticalFlow,topLeft,bottomRight)
+
+
+def plotOpticalFlowHistogram(imageFile,opticalFlowFile):
+
+    img = cv2.imread(imageFile)
+    opticalFlow = cv2.imread(opticalFlowFile)
+    u = opticalFlow[:,:,1]
+    v = opticalFlow[:,:,2]
+    oF = opticalFlow[:,:,0]
+    height = opticalFlow.shape[0]
+    width = opticalFlow.shape[1]
+
+
+    newWidth =  int(pow(2,np.ceil(np.log2(width))))
+    newHeight = int(pow(2,np.ceil(np.log2(height))))
+    newImg = cv2.resize(img,(newWidth,newHeight))
+    newOF = cv2.resize(opticalFlow,(newWidth,newHeight))
+
+    overlay = newImg.copy()
+    drawOverlay(overlay,newOF)
+
+    alpha = 0.5
+    output = newImg.copy()
+    cv2.addWeighted(overlay, alpha, output, 1 - alpha, 0, output)
+    result = cv2.resize(output,(width,height))
+
+    cv2.imshow('test',result)
+    cv2.waitKey(0)
+
 
 if __name__ == "__main__":
-    opticalFlowMetrics()
+    #opticalFlowMetrics()
+    plotOpticalFlowHistogram("./datasets/colored_0/000125_10.png","./datasets/flow_noc/000125_10.png")
