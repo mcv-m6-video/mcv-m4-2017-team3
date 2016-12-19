@@ -48,3 +48,10 @@ highwayBinaryMapping1.update({"Classes":2})
 
 # Mapping used. Change this line to change the mapping
 highwayMapping = highwayBinaryMapping1
+
+
+# Optical Flow variables 
+gtOFFolder = "./datasets/Optical_Flow/gt/"
+imagesOFFolder = "./datasets/Optical_Flow/images/"
+imagesOF = ["000045_10", "000157_10"]
+resultsOFFolder = "./results/resultsOF/"
