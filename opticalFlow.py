@@ -12,6 +12,35 @@ from matplotlib.ticker import FuncFormatter
 
 import configuration as conf
 
+def visualizeOF():
+    gtOFFiles = sorted(glob.glob(conf.gtOFFolder + "*png"))
+
+    for idx in range(len(gtOFFiles)):
+        OFimage = cv2.imread(gtOFFiles[idx], -1)
+        r, c, d = OFimage.shape;
+        OFimage = block_reduce(OFimage, block_size=(2,2,1), func=np.mean)
+        r, c, d = OFimage.shape;
+        uResult = []
+        vResult = []
+        validGroundTruth = []
+
+        for pixel in range(0, OFimage[:, :, 0].size):
+            isOF = OFimage[:, :, 0].flat[pixel]
+            if isOF == 1:
+                uResult.append((((float)(OFimage[:, :, 1].flat[pixel]) - math.pow(2, 15)) / 64.0)/200.0)
+                vResult.append((((float)(OFimage[:, :, 2].flat[pixel]) - math.pow(2, 15)) / 64.0)/200.0)
+            else:
+                uResult.append(0)
+                vResult.append(0)
+            validGroundTruth.append(isOF)
+
+        uResult = np.reshape(uResult, (r, c))
+        vResult = np.reshape(vResult, (r, c))
+        x, y = np.meshgrid(np.arange(0, c, 1), np.arange(0, r, 1))
+
+        plt.quiver(x, y, uResult, vResult, scale=1, hatch=' ', alpha = 0.3, linewidth = 0.001)
+        plt.show()
+        print 'Finished creating quiver'
 
 def to_percent(y, position):
     s = str(100 * y)
@@ -169,7 +198,6 @@ def drawOverlay(img,opticalFlow):
             bottomRight = (h+conf.OFSquareSize,v+conf.OFSquareSize)
             drawOverlayRegion(img,opticalFlow,topLeft,bottomRight)
 
-
 def plotOpticalFlowHistogram(imageFile,opticalFlowFile):
 
     img = cv2.imread(imageFile)
@@ -200,4 +228,4 @@ def plotOpticalFlowHistogram(imageFile,opticalFlowFile):
 
 if __name__ == "__main__":
     #opticalFlowMetrics()
-    plotOpticalFlowHistogram("./datasets/colored_0/000125_10.png","./datasets/flow_noc/000125_10.png")
+    plotOpticalFlowHistogram("./datasets/colored_0/000005_10.png","./datasets/flow_noc/000005_10.png")

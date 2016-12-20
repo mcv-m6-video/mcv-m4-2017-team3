@@ -18,4 +18,8 @@ from opticalFlow import opticalFlowMetrics
 # task 4. De-synchornized results
 # evaluateFolderDesynch("./results/highway/")
 
-# task 4. Visual representation optical flow
+# task 4. De-synchornized results
+# evaluateFolderDesynch("./results/highway/")
+
+# task 5. Visual representation optical flow
+# visualizeOF()
