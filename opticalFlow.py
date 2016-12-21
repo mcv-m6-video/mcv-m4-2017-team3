@@ -140,39 +140,50 @@ def drawOverlayRegion(img,opticalFlow,topLeft,bottomRight):
 
     region = opticalFlow[y:y+conf.OFSquareSize,x:x+conf.OFSquareSize,:]
 
-    regionU = region[:,:,1]
-    regionV = region[:,:,2]
+    U = region[:,:,1]
+    V = region[:,:,2]
 
-    #jointHistogram = np.histogram2d(np.asarray(regionU)[:,0],np.asarray(regionV)[:,0],bins = 16)
-    print regionU
-    print regionV
-    print jointHistogram[0]
-    print jointHistogram[1]
+    thHigh = 143
+    thLow = 112
+    jointHistogram = np.histogram2d(np.asarray(U)[:,0],np.asarray(V)[:,0],bins = 256)
+    positiveU = np.zeros((256,256))
+    for idx in range(0,256):
+        for idy in range (0,256):
+            positiveU[idy,idx] = 1 if idx >= thHigh else 0
+
+    positiveV = np.zeros((256,256))
+    for idx in range(0,256):
+        for idy in range (0,256):
+            positiveV[idy,idx] = 1 if idy >= thHigh else 0
+
+    VbiggerThanU = np.zeros((256,256))
+    for idx in range(0,256):
+        for idy in range (0,256):
+            VbiggerThanU[idy,idx] = 1 if idy >= idx else 0
+    VbiggerThanMinusU = np.zeros((256,256))
+    for idx in range(0,256):
+        for idy in range (0,256):
+            VbiggerThanMinusU[idy,idx] = 1 if idy >= 255-idx else 0
+
+
+    middleRegion = np.zeros((256,256))
+    middleRegion[thLow:thHigh,thLow:thHigh] = 1
+    jointHistogram = jointHistogram[0]
     histogram = []
 
-    u = np.less(regionU,32)
-    v = np.less(regionV,32)
-    histogram.append(sum(sum(np.bitwise_and(u,v))))
+    #No movement: thLow < u < thHigh and thLow < v < thHigh
+    histogram.append(sum(sum((jointHistogram*middleRegion))))
+    #We remove the middle region of the jointhistogram to ease notation, as they have already been computed
+    jointHistogram = jointHistogram * (1-middleRegion)
 
-    u = np.greater_equal(regionU,128)
-    v = np.greater_equal(regionV,128)
-    histogram.append(sum(sum(np.bitwise_and(np.bitwise_and(u,v),np.greater_equal(v,u)))))
-    histogram.append(sum(sum(np.bitwise_and(np.bitwise_and(u,v),np.less(v,u)))))
-
-    v = np.bitwise_and(np.less(regionV,128),np.greater_equal(regionV,32))
-    histogram.append(sum(sum(np.bitwise_and(np.bitwise_and(u,v),np.less(v,u)))))
-    histogram.append(sum(sum(np.bitwise_and(np.bitwise_and(u,v),np.greater_equal(v,u)))))
-
-    u = np.bitwise_and(np.less(regionU,128),np.greater_equal(regionU,32))
-    histogram.append(sum(sum(np.bitwise_and(np.bitwise_and(u,v),np.greater_equal(v,u)))))
-    histogram.append(sum(sum(np.bitwise_and(np.bitwise_and(u,v),np.less(v,u)))))
-
-    v = np.greater_equal(regionV,128)
-    histogram.append(sum(sum(np.bitwise_and(np.bitwise_and(u,v),np.less(v,u)))))
-    histogram.append(sum(sum(np.bitwise_and(np.bitwise_and(u,v),np.greater_equal(v,u)))))
-
-    histosum = sum(histogram)
-    histogram = [255*(float(el)/histosum) for el in histogram]
+    histogram.append(sum(sum(jointHistogram * (1-positiveV) * positiveU     * (1-VbiggerThanU) * VbiggerThanMinusU)))
+    histogram.append(sum(sum(jointHistogram * (1-positiveV) * positiveU     * VbiggerThanU     * VbiggerThanMinusU)))
+    histogram.append(sum(sum(jointHistogram * (1-positiveV) * (1-positiveU) * VbiggerThanU     * VbiggerThanMinusU)))
+    histogram.append(sum(sum(jointHistogram * (1-positiveV) * (1-positiveU) * VbiggerThanU     * (1-VbiggerThanMinusU))))
+    histogram.append(sum(sum(jointHistogram * positiveV     * (1-positiveU) * VbiggerThanU     * (1-VbiggerThanMinusU))))
+    histogram.append(sum(sum(jointHistogram * positiveV     * (1-positiveU) * (1-VbiggerThanU) * (1-VbiggerThanMinusU))))
+    histogram.append(sum(sum(jointHistogram * positiveV     * positiveU     * (1-VbiggerThanU) * (1-VbiggerThanMinusU))))
+    histogram.append(sum(sum(jointHistogram * positiveV     * positiveU     * (1-VbiggerThanU) * VbiggerThanMinusU)))
 
     cv2.rectangle(img,topLeft,bottomRight,(255,255,255))
     radius = ((bottomRight[0] - topLeft[0])/2,(bottomRight[1] - topLeft[1])/2)
@@ -202,8 +213,7 @@ def drawOverlay(img,opticalFlow):
             topLeft = (h,v)
             bottomRight = (h+conf.OFSquareSize,v+conf.OFSquareSize)
             drawOverlayRegion(img,opticalFlow,topLeft,bottomRight)
-            break
-        break
+            
 
 def plotOpticalFlowHistogram(imageFile,opticalFlowFile):
 
@@ -229,8 +239,8 @@ def plotOpticalFlowHistogram(imageFile,opticalFlowFile):
     cv2.addWeighted(overlay, alpha, output, 1 - alpha, 0, output)
     result = cv2.resize(output,(width,height))
 
-    cv2.imshow('test',result)
-    cv2.waitKey(0)
+
+    cv2.imwrite('test.png',result)
 
 
 if __name__ == "__main__":
