@@ -184,6 +184,8 @@ def drawOverlayRegion(img,opticalFlow,topLeft,bottomRight):
     histogram.append(sum(sum(jointHistogram * positiveV     * (1-positiveU) * (1-VbiggerThanU) * (1-VbiggerThanMinusU))))
     histogram.append(sum(sum(jointHistogram * positiveV     * positiveU     * (1-VbiggerThanU) * (1-VbiggerThanMinusU))))
     histogram.append(sum(sum(jointHistogram * positiveV     * positiveU     * (1-VbiggerThanU) * VbiggerThanMinusU)))
+    histosum = sum(histogram)
+    histogram = [float(bin)/histosum for bin in histogram]
 
     cv2.rectangle(img,topLeft,bottomRight,(255,255,255))
     radius = ((bottomRight[0] - topLeft[0])/2,(bottomRight[1] - topLeft[1])/2)
@@ -213,7 +215,7 @@ def drawOverlay(img,opticalFlow):
             topLeft = (h,v)
             bottomRight = (h+conf.OFSquareSize,v+conf.OFSquareSize)
             drawOverlayRegion(img,opticalFlow,topLeft,bottomRight)
-            
+
 
 def plotOpticalFlowHistogram(imageFile,opticalFlowFile):
 
@@ -245,4 +247,4 @@ def plotOpticalFlowHistogram(imageFile,opticalFlowFile):
 
 if __name__ == "__main__":
     #opticalFlowMetrics()
-    plotOpticalFlowHistogram("./datasets/colored_0/000005_10.png","./datasets/flow_noc/000005_10.png")
+    plotOpticalFlowHistogram("./datasets/colored_0/000025_10.png","./datasets/flow_noc/000025_10.png")
