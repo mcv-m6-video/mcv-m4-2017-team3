@@ -57,5 +57,5 @@ imagesOF = ["000045_10", "000157_10"]
 resultsOFFolder = "./results/resultsOF/"
 
 # Optical flow visualization variables
-OFSquareSize = pow(2,6)
+OFSquareSize = pow(2,3)
 nBins = 9

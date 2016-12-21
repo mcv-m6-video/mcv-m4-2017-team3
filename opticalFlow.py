@@ -143,6 +143,11 @@ def drawOverlayRegion(img,opticalFlow,topLeft,bottomRight):
     regionU = region[:,:,1]
     regionV = region[:,:,2]
 
+    #jointHistogram = np.histogram2d(np.asarray(regionU)[:,0],np.asarray(regionV)[:,0],bins = 16)
+    print regionU
+    print regionV
+    print jointHistogram[0]
+    print jointHistogram[1]
     histogram = []
 
     u = np.less(regionU,32)
@@ -197,6 +202,8 @@ def drawOverlay(img,opticalFlow):
             topLeft = (h,v)
             bottomRight = (h+conf.OFSquareSize,v+conf.OFSquareSize)
             drawOverlayRegion(img,opticalFlow,topLeft,bottomRight)
+            break
+        break
 
 def plotOpticalFlowHistogram(imageFile,opticalFlowFile):
 
