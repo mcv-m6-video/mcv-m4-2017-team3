@@ -4,7 +4,6 @@ import cv2
 import configuration as conf
 import glob
 
-
 def StaufferAndGrimsonAlgorithm(ID, IDGT):
 
     folder = conf.folders[ID]
@@ -13,29 +12,37 @@ def StaufferAndGrimsonAlgorithm(ID, IDGT):
     framesFilesGT = sorted(glob.glob(folderGT + '*'))
     nFrames = len(framesFiles)
 
-    frame = cv2.imread(framesFiles[0])
+    history = 10
+    nGauss = 3
+    bgThresh = 0.6
+    noise = 20
+    model_SG = cv2.BackgroundSubtractorMOG(history, nGauss, bgThresh, noise)
 
+    # Training Stage
+    trainingPercentage = 0.1
+
+    for idx in range(0,max(0,int(nFrames * trainingPercentage))):
+        frame = cv2.imread(framesFiles[idx])
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        model_SG.apply(frame)
+
+    # Create video instance
     # openCV 3
     # fourcc = cv2.VideoWriter_fourcc(*'XVID')
     # openCV 2
     fourcc = cv2.cv.CV_FOURCC(*'XVID')
     videoOutput = cv2.VideoWriter(ID + '-alfa' +str(conf.alfa) + '.avi',fourcc, 20.0, (frame.shape[0],frame.shape[1]))
 
-    trainingPercentage = 0.5
-
+    # Compute adaptive background mixture model
     for idx in range(max(0,int(nFrames * trainingPercentage)),nFrames):
         frame = cv2.imread(framesFiles[idx])
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         groundTruth = cv2.imread(framesFilesGT[idx])
         groundTruth = cv2.cvtColor(groundTruth, cv2.COLOR_BGR2GRAY)
 
-        count = 0
-        history = 10
-        nGauss = 3
-        bgThresh = 0.6
-        noise = 20
-        out = cv2.BackgroundSubtractorMOG(history, nGauss, bgThresh, noise)
-
+        out = model_SG.apply(frame)
         #  Find erroneous pixels
+        out = np.abs(out[:,:] > 0)
         groundTruth = np.abs(groundTruth[:,:] > 0)
         outError = np.bitwise_xor(out, groundTruth)
 
@@ -55,7 +62,7 @@ def StaufferAndGrimsonAlgorithm(ID, IDGT):
         videoOutput.write(instance * 255)
 
     videoOutput.release()
-
+    
 
 if __name__ == "__main__":
     StaufferAndGrimsonAlgorithm("Highway", "HighwayGT")
