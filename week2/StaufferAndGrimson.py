@@ -13,18 +13,18 @@ def StaufferAndGrimsonAlgorithm(ID, IDGT):
     nFrames = len(framesFiles)
 
     history = 10
-    nGauss = 3
+    nGauss = 5
     bgThresh = 0.6
     noise = 20
     model_SG = cv2.BackgroundSubtractorMOG(history, nGauss, bgThresh, noise)
 
     # Training Stage
-    trainingPercentage = 0.1
+    trainingPercentage = 0.5
 
     for idx in range(0,max(0,int(nFrames * trainingPercentage))):
         frame = cv2.imread(framesFiles[idx])
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        model_SG.apply(frame)
+        model_SG.apply(frame, learningRate=1.0/history)
 
     # Create video instance
     # openCV 3
@@ -40,7 +40,7 @@ def StaufferAndGrimsonAlgorithm(ID, IDGT):
         groundTruth = cv2.imread(framesFilesGT[idx])
         groundTruth = cv2.cvtColor(groundTruth, cv2.COLOR_BGR2GRAY)
 
-        out = model_SG.apply(frame)
+        out = model_SG.apply(frame, learningRate=0.2/history)
         #  Find erroneous pixels
         out = np.abs(out[:,:] > 0)
         groundTruth = np.abs(groundTruth[:,:] > 0)
@@ -53,7 +53,7 @@ def StaufferAndGrimsonAlgorithm(ID, IDGT):
         instance = np.stack([out, out, outError], axis=-1)
         cv2.imshow("OutputColor", instance * 255)
         cv2.imshow("Image", frame)
-        # cv2.imshow("Output", out * 255)
+        cv2.imshow("Output", out * 255)
         # cv2.imshow("GT", groundTruth*255)
 
         k = cv2.waitKey(5) & 0xff
