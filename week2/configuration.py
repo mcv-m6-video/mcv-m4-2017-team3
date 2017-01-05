@@ -1,6 +1,7 @@
 #!/usr/bin/env
 
 alfa = 1
+rho = 0
 
 folders = {}
 
