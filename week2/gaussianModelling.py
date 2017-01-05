@@ -16,6 +16,9 @@ def obtainGaussianModell(ID):
     mu = np.zeros_like(frame).ravel()
     sigma = np.zeros_like(frame).ravel()
 
+    fourcc = cv2.VideoWriter_fourcc(*'XVID')
+    videoOutput = cv2.VideoWriter(ID + '-alfa' +str(conf.alfa) + '.avi',fourcc, 20.0, (frame.shape[0],frame.shape[1]))
+
     trainingPercentage = 0.5
 
     for idx in range(0,max(0,int(nFrames * trainingPercentage))):
@@ -44,7 +47,8 @@ def obtainGaussianModell(ID):
         k = cv2.waitKey(5) & 0xff
         if k == 27:
             break
+        videoOutput.write(out * 255)
 
-
+    videoOutput.release()
 if __name__ == "__main__":
     obtainGaussianModell("Highway")
