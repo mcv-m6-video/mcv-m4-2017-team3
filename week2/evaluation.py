@@ -47,7 +47,7 @@ def evaluateImage(queryFile,gtFile):
 def evaluateFolder(folderPath):
     queryFiles = sorted(glob.glob(folderPath + "*"))
     results = dict()
-    numItems = 849 #0 #845
+    numItems = 0 #845
     #numItems = len(queryFiles)/2
     for idx, queryFile in enumerate(queryFiles[numItems:]):
         idx = idx + numItems
