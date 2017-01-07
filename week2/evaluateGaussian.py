@@ -26,7 +26,7 @@ for alfa in alfas:
     datasetGT  = "HighwayGT"
     colorSpace = 'YCrCb' # 'gray', 'HSV', 'YCrCb', 'BGR'
     gm.obtainGaussianModell(dataset, datasetGT, colorSpace, alfa)
-    TPi,TNi,FPi,FNi,precisioni,recalli,F1i = ev.evaluateFolder("./results/images/")
+    TPi,TNi,FPi,FNi,precisioni,recalli,F1i = ev.evaluateFolder("./results/imagesGaussianModelling/")
     
     TP.append(TPi)
     TN.append(TNi)

@@ -32,7 +32,7 @@ def obtainGaussianModell(ID, IDGT, colorSpace, alfa):
     # fourcc = cv2.VideoWriter_fourcc(*'XVID')
     # openCV 2
     fourcc = cv2.cv.CV_FOURCC(*'XVID')
-    videoOutput = cv2.VideoWriter(ID + '-alfa' +str(alfa) + '.avi',fourcc, 20.0, (frame.shape[0],frame.shape[1]))
+    videoOutput = cv2.VideoWriter("videos/" + ID + '-alfa' +str(alfa) + '.avi',fourcc, 20.0, (frame.shape[0],frame.shape[1]))
 
     trainingPercentage = 0.5
 
@@ -57,8 +57,8 @@ def obtainGaussianModell(ID, IDGT, colorSpace, alfa):
         mu = mu.reshape(frame.shape[0], frame.shape[1], frame.shape[2])
         sigma = sigma.reshape(frame.shape[0], frame.shape[1], frame.shape[2])
 
-    cv2.imwrite("results/mean-training" + str(trainingPercentage) + "-alfa-" + str(alfa) + ".png",mu.astype(np.uint8))
-    cv2.imwrite("results/sigma-training" + str(trainingPercentage) + "-alfa-" + str(alfa) + ".png",sigma.astype(np.uint8))
+    # cv2.imwrite("results/mean-training" + str(trainingPercentage) + "-alfa-" + str(alfa) + ".png",mu.astype(np.uint8))
+    # cv2.imwrite("results/sigma-training" + str(trainingPercentage) + "-alfa-" + str(alfa) + ".png",sigma.astype(np.uint8))
 
     for idx in range(max(0,int(nFrames * trainingPercentage)),nFrames):
         frame = cv2.imread(framesFiles[idx])
@@ -97,7 +97,8 @@ def obtainGaussianModell(ID, IDGT, colorSpace, alfa):
         videoOutput.write(instance * 255)
         
         file_name = framesFiles[idx]
-        cv2.imwrite('./results/images/' + file_name[file_name.rfind('/')+1:] , out)
+        cv2.imwrite('./results/imagesGaussianModelling/' + file_name[file_name.rfind('\\')+1:] , out)
+
     videoOutput.release()
 
 
