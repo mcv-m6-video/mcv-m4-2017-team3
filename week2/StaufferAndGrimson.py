@@ -65,4 +65,6 @@ def StaufferAndGrimsonAlgorithm(ID, IDGT):
     
 
 if __name__ == "__main__":
-    StaufferAndGrimsonAlgorithm("Highway", "HighwayGT")
+    dataset    = "Highway"
+    datasetGT  = "HighwayGT"
+    StaufferAndGrimsonAlgorithm(dataset, datasetGT)

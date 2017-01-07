@@ -13,7 +13,7 @@ import glob
 #       FN. Red pixels
 #  Background: all the black pixels
 
-def obtainGaussianModell(ID, IDGT):
+def obtainGaussianModell(ID, IDGT, colorSpace):
 
     folder = conf.folders[ID]
     folderGT = conf.folders[IDGT]
@@ -22,6 +22,8 @@ def obtainGaussianModell(ID, IDGT):
     nFrames = len(framesFiles)
 
     frame = cv2.imread(framesFiles[0])
+    if colorSpace == 'gray':
+        frame = cv2.cvtColor(frame, conf.colorSpaceConverion[colorSpace])
 
     mu = np.zeros_like(frame).ravel()
     sigma = np.zeros_like(frame).ravel()
@@ -36,25 +38,42 @@ def obtainGaussianModell(ID, IDGT):
 
     for idx in range(0,max(0,int(nFrames * trainingPercentage))):
         frame = cv2.imread(framesFiles[idx])
+        if colorSpace != 'BGR':
+            frame = cv2.cvtColor(frame, conf.colorSpaceConverion[colorSpace])
         mu = ((idx) * mu + frame.ravel())/float(idx + 1)
+
     for idx in range(0,max(0,int(nFrames * trainingPercentage))):
         frame = cv2.imread(framesFiles[idx])
+        if colorSpace != 'BGR':
+            frame = cv2.cvtColor(frame, conf.colorSpaceConverion[colorSpace])
         sigma = sigma + (frame.ravel() - mu)**2
+
     sigma = np.sqrt(sigma / max(0,int(nFrames * trainingPercentage)))
 
-    mu = mu.reshape(frame.shape[0],frame.shape[1],frame.shape[2])
-    sigma = sigma.reshape(frame.shape[0],frame.shape[1],frame.shape[2])
+    if colorSpace == 'gray':
+        mu = mu.reshape(frame.shape[0],frame.shape[1])
+        sigma = sigma.reshape(frame.shape[0],frame.shape[1])
+    else:
+        mu = mu.reshape(frame.shape[0], frame.shape[1], frame.shape[2])
+        sigma = sigma.reshape(frame.shape[0], frame.shape[1], frame.shape[2])
 
     cv2.imwrite("results/mean-training" + str(trainingPercentage) + "-alfa-" + str(conf.alfa) + ".png",mu.astype(np.uint8))
     cv2.imwrite("results/sigma-training" + str(trainingPercentage) + "-alfa-" + str(conf.alfa) + ".png",sigma.astype(np.uint8))
 
     for idx in range(max(0,int(nFrames * trainingPercentage)),nFrames):
         frame = cv2.imread(framesFiles[idx])
+        if colorSpace != 'BGR':
+            frame = cv2.cvtColor(frame, conf.colorSpaceConverion[colorSpace])
+
         groundTruth = cv2.imread(framesFilesGT[idx])
-        groundTruth = cv2.cvtColor(groundTruth, cv2.COLOR_BGR2GRAY)
-        out = np.abs(frame[:,:,0] - mu[:,:,0]) >= conf.alfa * (sigma[:,:,0] + 2)
-        for channel in range(1,frame.shape[2]):
-            out = np.bitwise_or(np.abs(frame[:,:,channel] - mu[:,:,channel]) >= conf.alfa * (sigma[:,:,channel] + 2),out)
+        groundTruth = cv2.cvtColor(groundTruth, conf.colorSpaceConverion['gray'])
+
+        if colorSpace != 'gray':
+            out = np.abs(frame[:,:,0] - mu[:,:,0]) >= conf.alfa * (sigma[:,:,0] + 2)
+            for channel in range(1,frame.shape[2]):
+                out = np.bitwise_or(np.abs(frame[:,:,channel] - mu[:,:,channel]) >= conf.alfa * (sigma[:,:,channel] + 2),out)
+        else:
+            out = np.abs(frame[:,:] - mu[:,:]) >= conf.alfa * (sigma[:,:] + 2)
 
         #  Find erroneous pixels
         groundTruth = np.abs(groundTruth[:,:] > 0)
@@ -79,4 +98,7 @@ def obtainGaussianModell(ID, IDGT):
 
 
 if __name__ == "__main__":
-    obtainGaussianModell("Highway", "HighwayGT")
+    dataset    = "Highway"
+    datasetGT  = "HighwayGT"
+    colorSpace = 'YCrCb' # 'gray', 'HSV', 'YCrCb', 'BGR'
+    obtainGaussianModell(dataset, datasetGT, colorSpace)
