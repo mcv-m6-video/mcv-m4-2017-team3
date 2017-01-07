@@ -95,7 +95,9 @@ def obtainGaussianModell(ID, IDGT, colorSpace, alfa):
             break
         '''
         videoOutput.write(instance * 255)
-
+        
+        file_name = framesFiles[idx]
+        cv2.imwrite('./results/images/' + file_name[file_name.rfind('/')+1:] , out)
     videoOutput.release()
 
 
