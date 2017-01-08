@@ -7,7 +7,7 @@ import gaussianModelling as gm
 import adaptativeGaussian as ag
 import matplotlib.pyplot as plt
 
-alfas = np.arange(0,15)
+alfas = np.arange(1,3)
 TP = []
 TN = []
 FP = []
@@ -35,14 +35,12 @@ for alfa in alfas:
     precision.append(precisioni)
     recall.append(recalli)
     F1.append(F1i)
-    
+
     # Adaptative gaussian
-    '''
-    mu, sigma = ag.obtainGaussianModell("Highway", alfa)
+    mu, sigma = ag.obtainGaussianModell("Highway")
     ag.foreground_substraction("Highway", mu, sigma, alfa)
-    aux,aux,aux,aux,aux,aux,F1i_adaptative = ev.evaluateFolder("./results/images/")
+    aux,aux,aux,aux,aux,aux,F1i_adaptative = ev.evaluateFolder("./results/imagesAdaptativeGaussian/")
     F1_adaptative.append(F1i_adaptative)
-    '''
 
 
 # Plot the features
@@ -56,14 +54,13 @@ ax1.plot(FN,color='black')
 ax1.set_xlabel('Threshold')
 ax1.set_ylabel('Number of pixels')
 
-'''
+
 ax2 = fig.add_subplot(1,2,2)
 plt.title('F-measure depending on threshold')
 ax2.plot(F1,color='red')
 ax2.plot(F1_adaptative,color='blue')
 ax2.set_xlabel('Threshold')
 ax2.set_ylabel('F1-Measure')
-'''
 
 # Task 1.3 Precision vs Recall curve and AUC
 fig = plt.figure()

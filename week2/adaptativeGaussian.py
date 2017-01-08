@@ -34,12 +34,12 @@ def obtainGaussianModell(ID):
     mu = mu.reshape(frame.shape[0],frame.shape[1])
     sigma = sigma.reshape(frame.shape[0],frame.shape[1])
 
-    cv2.imwrite("results/mean-training" + str(trainingPercentage) + "-alfa-" + str(conf.alfa) + ".png",mu.astype(np.uint8))
-    cv2.imwrite("results/sigma-training" + str(trainingPercentage) + "-alfa-" + str(conf.alfa) + ".png",sigma.astype(np.uint8))
+    # cv2.imwrite("results/mean-training" + str(trainingPercentage) + "-alfa-" + str(conf.alfa) + ".png",mu.astype(np.uint8))
+    # cv2.imwrite("results/sigma-training" + str(trainingPercentage) + "-alfa-" + str(conf.alfa) + ".png",sigma.astype(np.uint8))
 
     return mu, sigma
     
-def foreground_substraction(ID, IDGT, mu, sigma):
+def foreground_substraction(ID, IDGT, mu, sigma, alpha):
 
     rho = conf.rho
 
@@ -67,7 +67,7 @@ def foreground_substraction(ID, IDGT, mu, sigma):
         groundTruth = cv2.imread(framesFilesGT[idx])
         groundTruth = cv2.cvtColor(groundTruth, conf.colorSpaceConverion['gray'])
 
-        out = np.abs(frame[:,:] - mu[:,:]) >= conf.alfa * (sigma[:,:] + 2)
+        out = np.abs(frame[:,:] - mu[:,:]) >= alpha * (sigma[:,:] + 2)
         out = out.astype(np.uint8)
 
         muFlat       = mu.ravel()
@@ -92,19 +92,24 @@ def foreground_substraction(ID, IDGT, mu, sigma):
         groundTruth = groundTruth.astype(np.uint8)
 
         instance = np.stack([out, out, outError], axis=-1)
-        cv2.imshow("OutputColor", instance * 255)
+        # cv2.imshow("OutputColor", instance * 255)
         # cv2.imshow("Image", frame)
         # cv2.imshow("Output", out * 255)
         # cv2.imshow("GT", groundTruth*255)
+        #
+        # k = cv2.waitKey(5) & 0xff
+        # if k == 27:
+        #     break
 
-        k = cv2.waitKey(5) & 0xff
-        if k == 27:
-            break
-        videoOutput.write(out * 255)
+        file_name = framesFiles[idx]
+        cv2.imwrite('./results/imagesAdaptativeGaussian/' + file_name[file_name.rfind('\\') + 1:], out)
+
+        videoOutput.write(instance * 255)
 
     videoOutput.release()
 if __name__ == "__main__":
     dataset    = "Highway"
     datasetGT  = "HighwayGT"
+    alpha = conf.alfa
     mu, sigma = obtainGaussianModell(dataset)
-    foreground_substraction(dataset, datasetGT, mu, sigma)
+    foreground_substraction(dataset, datasetGT, mu, sigma, alpha)

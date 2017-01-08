@@ -84,16 +84,16 @@ def obtainGaussianModell(ID, IDGT, colorSpace, alfa):
         groundTruth = groundTruth.astype(np.uint8)
 
         instance = np.stack([out, out, outError], axis=-1)
-        '''
-        cv2.imshow("OutputColor", instance * 255)
-        cv2.imshow("Image", frame)
-        # cv2.imshow("Output", out * 255)
-        # cv2.imshow("GT", groundTruth*255)
 
-        k = cv2.waitKey(5) & 0xff
-        if k == 27:
-            break
-        '''
+        # cv2.imshow("OutputColor", instance * 255)
+        # cv2.imshow("Image", frame)
+        # # cv2.imshow("Output", out * 255)
+        # # cv2.imshow("GT", groundTruth*255)
+        #
+        # k = cv2.waitKey(5) & 0xff
+        # if k == 27:
+        #     break
+
         videoOutput.write(instance * 255)
         
         file_name = framesFiles[idx]
