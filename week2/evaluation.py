@@ -47,17 +47,17 @@ def evaluateImage(queryFile,gtFile):
 def evaluateFolder(folderPath):
     queryFiles = sorted(glob.glob(folderPath + "*"))
     results = dict()
-    numItems = 845 #0 #845
-    #numItems = len(queryFiles)/2
-    for idx, queryFile in enumerate(queryFiles[numItems:]):
-        idx = idx + numItems
+    numItems = len(queryFiles)
+    for idx, queryFile in enumerate(queryFiles[:]):
         print str(1+idx) + "/" + str(len(queryFiles))
         file_name = queryFile
         #gtFile = conf.gtFolder + conf.gtPrefix + file_name[file_name.rfind('/')+3:-4] + conf.gtExtension
-        gtFile = conf.folders["HighwayGT"] + 'gt' + file_name[file_name.rfind('/')+3:-4] + '.png'
-        
-        print ('===================')
-        print (gtFile)
+        # Ubuntu
+        # gtFile = conf.folders["HighwayGT"] + 'gt' + file_name[file_name.rfind('/')+3:-4] + '.png'
+        # Windows
+        gtFile = conf.folders["HighwayGT"] + 'gt' + file_name[file_name.rfind('\\') + 3:-4] + '.png'
+        # print ('===================')
+        # print (gtFile)
         
         confusion,precision,recall,f1 = evaluateImage(queryFile,gtFile)
         accuracy = float(confusion.trace())/np.sum(confusion)
