@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import os
 import evaluation as ev
 import configuration as conf
 import numpy as np
