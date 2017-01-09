@@ -46,7 +46,7 @@ def evaluateImage(queryFile,gtFile):
 
 
 # Evaluates a whole folder, using the groundtruth and image prefixes of configuration file
-def evaluateFolder(folderPath):
+def evaluateFolder(folderPath, datasetGT="HighwayGT"):
     queryFiles = sorted(glob.glob(folderPath + "*"))
     results = dict()
     numItems = len(queryFiles)
@@ -58,7 +58,7 @@ def evaluateFolder(folderPath):
         # Ubuntu
         # gtFile = conf.folders["HighwayGT"] + 'gt' + file_name[file_name.rfind('/')+3:-4] + '.png'
         # Windows
-        gtFile = conf.folders["HighwayGT"] + 'gt' + file_name[file_name.rfind('\\') + 3:-4] + '.png'
+        gtFile = conf.folders[datasetGT] + 'gt' + file_name[file_name.rfind('\\') + 3:-4] + '.png'
         # print ('===================')
         # print (gtFile)
         
