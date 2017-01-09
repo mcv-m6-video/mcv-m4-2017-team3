@@ -5,6 +5,7 @@ import numpy as np
 import glob
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import precision_recall_fscore_support as score
+from sklearn.metrics import roc_auc_score
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import json
@@ -39,8 +40,9 @@ def evaluateImage(queryFile,gtFile):
 
     confMat = confusion_matrix(gtVector,predictionVector)
     precision, recall, fscore, support = score(gtVector, predictionVector)
-
-    return confMat,precision,recall,fscore
+    auc = roc_auc_score(gtVector, predictionVector)
+    
+    return confMat,precision,recall,fscore,auc
 
 
 # Evaluates a whole folder, using the groundtruth and image prefixes of configuration file
@@ -59,7 +61,7 @@ def evaluateFolder(folderPath):
         # print ('===================')
         # print (gtFile)
         
-        confusion,precision,recall,f1 = evaluateImage(queryFile,gtFile)
+        confusion,precision,recall,f1,auc = evaluateImage(queryFile,gtFile)
         accuracy = float(confusion.trace())/np.sum(confusion)
         results[queryFile[len(folderPath):]] = {"Confusion Matrix":confusion.tolist(),"Precision":precision.tolist(),"Recall":recall.tolist(),"Accuracy":accuracy,"Fscore":f1.tolist()}
 
@@ -120,7 +122,7 @@ def evaluateFolder(folderPath):
     # print TP,TN,FP,FN
     # print precision,recall,F1
     
-    return TP,TN,FP,FN,precision,recall,F1
+    return TP,TN,FP,FN,precision,recall,F1,auc
 
 
 # Plots the evolution of the video sequence (task 2 basically)
