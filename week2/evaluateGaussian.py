@@ -31,7 +31,7 @@ gM_path = results_path + "/imagesGaussianModelling/"
 if not os.path.exists(gM_path):
     os.makedirs(gM_path)
 
-aG_path = results_path + "/imagesAdaptativeGaussian/"
+aG_path = results_path + "/imagesAdaptativeGaussianModelling/" #"/imagesAdaptativeGaussian/"
 if not os.path.exists(aG_path):
     os.makedirs(aG_path)
 
