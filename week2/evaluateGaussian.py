@@ -17,8 +17,23 @@ precision = []
 recall = []
 F1 = []
 F1_adaptative = []
+auc = []
 bestF1 = 0
 optAlpha = 0
+
+# Check if 'results' folder exists.
+results_path = "./results"
+if not os.path.exists(results_path):
+    os.makedirs(results_path)
+
+gM_path = results_path + "/imagesGaussianModelling/"
+if not os.path.exists(gM_path):
+    os.makedirs(gM_path)
+
+aG_path = results_path + "/imagesAdaptativeGaussian/"
+if not os.path.exists(aG_path):
+    os.makedirs(aG_path)
+
 
 # Compute the evaluation
 for alfa in alfas:
@@ -28,7 +43,7 @@ for alfa in alfas:
     datasetGT  = "HighwayGT"
     colorSpace = 'gray' # 'gray', 'HSV', 'YCrCb', 'BGR'
     gm.obtainGaussianModell(dataset, datasetGT, colorSpace, alfa)
-    TPi,TNi,FPi,FNi,precisioni,recalli,F1i = ev.evaluateFolder("./results/imagesGaussianModelling/")
+    TPi,TNi,FPi,FNi,precisioni,recalli,F1i,auci = ev.evaluateFolder(gM_path)
 
     TP.append(TPi)
     TN.append(TNi)
@@ -37,11 +52,12 @@ for alfa in alfas:
     precision.append(precisioni)
     recall.append(recalli)
     F1.append(F1i)
+    auc.append(auci)
 
     # Adaptative gaussian
     mu, sigma = ag.obtainGaussianModell("Highway")
     ag.foreground_substraction("Highway", "HighwayGT", mu, sigma, alfa, 0) # rho equal to 0, in order to find the optimal alpha
-    aux,aux,aux,aux,aux,aux,F1i_adaptative = ev.evaluateFolder("./results/imagesAdaptativeGaussian/")
+    aux,aux,aux,aux,aux,aux,F1i_adaptative,aux = ev.evaluateFolder(aG_path)
     F1_adaptative.append(F1i_adaptative)
 
     if F1i_adaptative > bestF1:
@@ -93,4 +109,4 @@ for rho in rhos:
 
 #ax1 = fig.add_subplot(1,2,2)
 #plt.title('Area under the curve')
-#ax1.plot(recall, precision,color='green')
+#ax1.plot(auc, precision,color='green')
