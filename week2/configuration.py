@@ -18,6 +18,12 @@ colorSpaceConverion['gray']  = cv2.COLOR_BGR2GRAY
 folders["Highway"]  = "../../../datasetDeliver_2/highway/input/"
 folders["HighwayGT"]  = "../../../datasetDeliver_2/highway/groundtruth/"
 
+folders["Fall"]  = "../../../datasetDeliver_2/fall/input/"
+folders["FallGT"]  = "../../../datasetDeliver_2/fall/groundtruth/"
+
+folders["Traffic"]  = "../../../datasetDeliver_2/traffic/input/"
+folders["TrafficGT"]  = "../../../datasetDeliver_2/traffic/groundtruth/"
+
 # Evaluation
 
 # Results logging
