@@ -106,7 +106,14 @@ def foreground_substraction(ID, IDGT, mu, sigma, alpha, rho):
         #     break
 
         file_name = framesFiles[idx]
-        cv2.imwrite('./results/imagesAdaptativeGaussian/' + file_name[file_name.rfind('\\') + 1:], out)
+        #OS dependant writing
+        if operativeSystem == 'posix':
+            #posix systems go here: ubuntu, debian, linux mint, red hat, etc, even osX (iew)
+            cv2.imwrite('./results/imagesAdaptativeGaussianModelling/' + file_name.split('/')[-1] , out)
+        else:
+            #say hello to propietary software
+            cv2.imwrite('./results/imagesAdaptativeGaussianModelling/' + file_name.split('\\')[-1] , out)
+        
 
         videoOutput.write(instance * 255)
 
