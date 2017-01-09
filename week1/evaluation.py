@@ -5,13 +5,14 @@ import numpy as np
 import glob
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import precision_recall_fscore_support as score
+from sklearn.metrics import roc_auc_score
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import json
 import collections
 
 import configuration as conf
-import highwayEvents as ev
+#import highwayEvents as ev
 
 
 # Evaluates one single frame, according to the mapping defined in the
@@ -40,18 +41,27 @@ def evaluateImage(queryFile,gtFile):
     confMat = confusion_matrix(gtVector,predictionVector)
     precision, recall, fscore, support = score(gtVector, predictionVector)
 
-    return confMat,precision,recall,fscore
+    auc = roc_auc_score(gtVector, predictionVector)
+
+    return confMat,precision,recall,fscore,auc
 
 
 # Evaluates a whole folder, using the groundtruth and image prefixes of configuration file
-def evaluateFolder(folderPath):
-    queryFiles = sorted(glob.glob(folderPath + conf.queryImgPrefix + "*"))
-
+def evaluateFolder(folderPath, numItems=0):
+    queryFiles = sorted(glob.glob(folderPath + "*"))
     results = dict()
-    for idx,queryFile in enumerate(queryFiles):
+    #numItems = len(queryFiles)/2
+    for idx, queryFile in enumerate(queryFiles[numItems:]):
+        idx = idx + numItems
         print str(1+idx) + "/" + str(len(queryFiles))
-        gtFile = conf.gtFolder + conf.gtPrefix + queryFile[len(folderPath) + len(conf.queryImgPrefix):-4] + conf.gtExtension
-        confusion,precision,recall,f1 = evaluateImage(queryFile,gtFile)
+        file_name = queryFile
+        #gtFile = conf.gtFolder + conf.gtPrefix + file_name[file_name.rfind('/')+3:-4] + conf.gtExtension
+        gtFile = conf.folders["HighwayGT"] + 'gt' + file_name[file_name.rfind('/')+3:-4] + '.png'
+
+        print ('===================')
+        print (gtFile)
+
+        confusion,precision,recall,f1,auc = evaluateImage(queryFile,gtFile)
         accuracy = float(confusion.trace())/np.sum(confusion)
         results[queryFile[len(folderPath):]] = {"Confusion Matrix":confusion.tolist(),"Precision":precision.tolist(),"Recall":recall.tolist(),"Accuracy":accuracy,"Fscore":f1.tolist()}
 
@@ -64,8 +74,15 @@ def evaluateFolder(folderPath):
         FN = sum([results[el]["Confusion Matrix"][1][0] for el in results.keys()])
         TP = sum([results[el]["Confusion Matrix"][1][1] for el in results.keys()])
 
-        precision = float(TP)/(TP+FP)
-        recall = float(TP)/(TP+FN)
+        if (TP+FP) > 0.0:
+            precision = float(TP)/(TP+FP)
+        else:
+            precision = 0.0
+
+        if (TP+FN) > 0.0:
+            recall = float(TP)/(TP+FN)
+        else:
+            recall = 0.0
 
     else:
         #this case is weird and won't be used (hopefully)
@@ -84,14 +101,27 @@ def evaluateFolder(folderPath):
                 FP += sum([results[el]["Confusion Matrix"][i][label] for el in results.keys()])
                 FN += sum([results[el]["Confusion Matrix"][label][i] for el in results.keys()])
             # mean precision and recall as a serie (arithmetic, this may give a headache)
-            precision = (precision*(label) + float(TP)/(TP+FP))/(label+1)
-            recall = (recall*(label) + float(TP)/(TP+FN))/(label+1)
+            if (TP+FP) > 0.0:
+                precision = (precision*(label) + float(TP)/(TP+FP))/(label+1)
+            else:
+                precision = 0.0
+
+            if (TP+FN) > 0.0:
+                recall = (recall*(label) + float(TP)/(TP+FN))/(label+1)
+            else:
+                recall = 0.0
 
     beta = 1
-    F1 = (1+pow(beta,2))*precision*recall/(pow(beta,2)*precision + recall)
+
+    if (precision + recall) > 0.0:
+        F1 = (1+pow(beta,2))*precision*recall/(pow(beta,2)*precision + recall)
+    else:
+        F1 = 0.0
 
     print TP,TN,FP,FN
-    print precision,recall,F1
+    print precision,recall,F1,auc
+
+    return TP,TN,FP,FN,precision,recall,F1,auc
 
 
 # Plots the evolution of the video sequence (task 2 basically)
