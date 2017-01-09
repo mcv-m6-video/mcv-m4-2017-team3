@@ -3,7 +3,10 @@ import numpy as np
 import cv2
 import configuration as conf
 import glob
+import os
 
+operativeSystem = os.name
+(CVmajor, CVminor, _) = cv2.__version__.split(".")
 
 def obtainGaussianModell(ID):
 
@@ -38,7 +41,7 @@ def obtainGaussianModell(ID):
     # cv2.imwrite("results/sigma-training" + str(trainingPercentage) + "-alfa-" + str(conf.alfa) + ".png",sigma.astype(np.uint8))
 
     return mu, sigma
-    
+
 def foreground_substraction(ID, IDGT, mu, sigma, alpha, rho):
 
     folder = conf.folders[ID]
@@ -49,11 +52,14 @@ def foreground_substraction(ID, IDGT, mu, sigma, alpha, rho):
 
     frame = cv2.imread(framesFiles[0])
 
-    # openCV 3
-    # fourcc = cv2.VideoWriter_fourcc(*'XVID')
-    # openCV 2
-    fourcc = cv2.cv.CV_FOURCC(*'XVID')
-    videoOutput = cv2.VideoWriter("videos/" + ID + '-alfa' +str(alpha)+ '-rho' +str(rho) + '.avi',fourcc, 20.0, (frame.shape[0],frame.shape[1]))
+    if CVmajor == '3':
+        # openCV 3
+        fourcc = cv2.VideoWriter_fourcc(*'MJPG')
+    else:
+        # openCV 2
+        fourcc = cv2.cv.CV_FOURCC(*'MJPG')
+
+    videoOutput = cv2.VideoWriter("videos/adaptative-" + ID + '-alfa' +str(conf.alfa) + '.avi',fourcc, 20.0, (frame.shape[1],frame.shape[0]))
 
     trainingPercentage = 0.5
 
@@ -63,7 +69,7 @@ def foreground_substraction(ID, IDGT, mu, sigma, alpha, rho):
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
         groundTruth = cv2.imread(framesFilesGT[idx])
-        groundTruth = cv2.cvtColor(groundTruth, conf.colorSpaceConverion['gray'])
+        groundTruth = cv2.cvtColor(groundTruth, conf.colorSpaceConversion['gray'])
 
         out = np.abs(frame[:,:] - mu[:,:]) >= alpha * (sigma[:,:] + 2)
         out = out.astype(np.uint8)
