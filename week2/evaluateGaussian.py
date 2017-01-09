@@ -74,7 +74,7 @@ for rho in rhos:
     # Adaptative gaussian
     mu, sigma = ag.obtainGaussianModell("Highway")
     ag.foreground_substraction("Highway", "HighwayGT", mu, sigma, optAlpha, rho)
-    aux, aux, aux, aux, aux, aux, F1 = ev.evaluateFolder("./results/imagesAdaptativeGaussian/")
+    aux, aux, aux, aux, aux, aux, F1, aux = ev.evaluateFolder(aG_path)
 
     if F1 > bestF1:
         bestF1 = F1
