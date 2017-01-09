@@ -3,8 +3,9 @@ import numpy as np
 import cv2
 import configuration as conf
 import glob
+import evaluation as ev
 
-def StaufferAndGrimsonAlgorithm(ID, IDGT):
+def StaufferAndGrimsonAlgorithm(ID, IDGT, history, nGauss, bgThresh):
 
     folder = conf.folders[ID]
     folderGT = conf.folders[IDGT]
@@ -12,9 +13,6 @@ def StaufferAndGrimsonAlgorithm(ID, IDGT):
     framesFilesGT = sorted(glob.glob(folderGT + '*'))
     nFrames = len(framesFiles)
 
-    history = 10
-    nGauss = 5
-    bgThresh = 0.6
     noise = 20
     model_SG = cv2.BackgroundSubtractorMOG(history, nGauss, bgThresh, noise)
 
@@ -31,7 +29,7 @@ def StaufferAndGrimsonAlgorithm(ID, IDGT):
     # fourcc = cv2.VideoWriter_fourcc(*'XVID')
     # openCV 2
     fourcc = cv2.cv.CV_FOURCC(*'XVID')
-    videoOutput = cv2.VideoWriter(ID + '-alfa' +str(conf.alfa) + '.avi',fourcc, 20.0, (frame.shape[0],frame.shape[1]))
+    videoOutput = cv2.VideoWriter("videos/" + ID + 'StaufferAndGrimsonAlgorithm.avi',fourcc, 20.0, (frame.shape[0],frame.shape[1]))
 
     # Compute adaptive background mixture model
     for idx in range(max(0,int(nFrames * trainingPercentage)),nFrames):
@@ -51,14 +49,17 @@ def StaufferAndGrimsonAlgorithm(ID, IDGT):
         groundTruth = groundTruth.astype(np.uint8)
 
         instance = np.stack([out, out, outError], axis=-1)
-        cv2.imshow("OutputColor", instance * 255)
-        cv2.imshow("Image", frame)
-        cv2.imshow("Output", out * 255)
+        # cv2.imshow("OutputColor", instance * 255)
+        # cv2.imshow("Image", frame)
+        # cv2.imshow("Output", out * 255)
         # cv2.imshow("GT", groundTruth*255)
 
-        k = cv2.waitKey(5) & 0xff
-        if k == 27:
-            break
+        # k = cv2.waitKey(5) & 0xff
+        # if k == 27:
+        #     break
+
+        file_name = framesFiles[idx]
+        cv2.imwrite('./results/StaufferAndGrimson/' + file_name[file_name.rfind('\\') + 1:], out)
         videoOutput.write(instance * 255)
 
     videoOutput.release()
@@ -67,4 +68,10 @@ def StaufferAndGrimsonAlgorithm(ID, IDGT):
 if __name__ == "__main__":
     dataset    = "Highway"
     datasetGT  = "HighwayGT"
-    StaufferAndGrimsonAlgorithm(dataset, datasetGT)
+    history = conf.history
+    nGauss = conf.nGauss
+    bgThresh = conf.bgThresh
+    StaufferAndGrimsonAlgorithm(dataset, datasetGT, history, nGauss, bgThresh)
+    aux, aux, aux, aux, aux, aux, F1 = ev.evaluateFolder("./results/StaufferAndGrimson/")
+
+    print ('--- F1 Stauffer And Grimson Model: ' + str(F1))

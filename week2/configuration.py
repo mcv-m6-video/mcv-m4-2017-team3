@@ -6,7 +6,9 @@ colorSpaceConverion = {}
 folders = {}
 alfa = 1
 rho = 0
-
+history = 20
+nGauss = 3
+bgThresh = 0.3
 
 # YCrCb (99 out of 100 you will be doing it in YCrCb when doing video)
 colorSpaceConverion['YCrCb'] = cv2.COLOR_BGR2YCR_CB

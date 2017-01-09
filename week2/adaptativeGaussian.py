@@ -53,7 +53,7 @@ def foreground_substraction(ID, IDGT, mu, sigma, alpha, rho):
     # fourcc = cv2.VideoWriter_fourcc(*'XVID')
     # openCV 2
     fourcc = cv2.cv.CV_FOURCC(*'XVID')
-    videoOutput = cv2.VideoWriter(ID + '-alfa' +str(conf.alfa) + '.avi',fourcc, 20.0, (frame.shape[0],frame.shape[1]))
+    videoOutput = cv2.VideoWriter("videos/" + ID + '-alfa' +str(alpha)+ '-rho' +str(rho) + '.avi',fourcc, 20.0, (frame.shape[0],frame.shape[1]))
 
     trainingPercentage = 0.5
 
