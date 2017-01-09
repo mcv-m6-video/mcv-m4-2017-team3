@@ -104,12 +104,12 @@ ax2.set_ylabel('F1-Measure')
 fig.show()
 
 # Task 1.3 Precision vs Recall curve and AUC
-fig = plt.figure()
-ax1 = fig.add_subplot(1,2,1)
+fig2 = plt.figure()
+ax1 = fig2.add_subplot(1,2,1)
 plt.title('Precision vs recall')
 ax1.plot(recall, precision,color='green')
 
-ax2 = fig.add_subplot(1,2,2)
+ax2 = fig2.add_subplot(1,2,2)
 plt.title('Area under the curve')
 ax2.plot(auc, precision,color='green')
 '''
