@@ -7,7 +7,7 @@ import gaussianModelling as gm
 import adaptativeGaussian as ag
 import matplotlib.pyplot as plt
 
-alfas = np.arange(1,3)
+alfas = np.arange(0,15)
 TP = []
 TN = []
 FP = []
@@ -19,15 +19,14 @@ F1_adaptative = []
 
 # Compute the evaluation
 for alfa in alfas:
-    print ('--- Alfa: ' + str(alfa))
     
     # One gaussian
     dataset    = "Highway"
     datasetGT  = "HighwayGT"
-    colorSpace = 'YCrCb' # 'gray', 'HSV', 'YCrCb', 'BGR'
+    colorSpace = 'gray' # 'gray', 'HSV', 'YCrCb', 'BGR'
     gm.obtainGaussianModell(dataset, datasetGT, colorSpace, alfa)
     TPi,TNi,FPi,FNi,precisioni,recalli,F1i = ev.evaluateFolder("./results/imagesGaussianModelling/")
-    
+
     TP.append(TPi)
     TN.append(TNi)
     FP.append(FPi)
@@ -38,35 +37,39 @@ for alfa in alfas:
 
     # Adaptative gaussian
     mu, sigma = ag.obtainGaussianModell("Highway")
-    ag.foreground_substraction("Highway", mu, sigma, alfa)
+    ag.foreground_substraction("Highway", "HighwayGT", mu, sigma, alfa)
     aux,aux,aux,aux,aux,aux,F1i_adaptative = ev.evaluateFolder("./results/imagesAdaptativeGaussian/")
     F1_adaptative.append(F1i_adaptative)
 
+    print ('--- Alfa: ' + str(alfa))
+    print ('--- F1 Gaussian Model: ' + str(F1i))
+    print ('--- F1 Adaptative Gaussian Model: ' + str(F1i_adaptative))
+
 
 # Plot the features
-fig = plt.figure()
-ax1 = fig.add_subplot(1,2,1)
-plt.title('TP FN TN FP for ONE GAUSSIAN')
-ax1.plot(TP,color='red')
-ax1.plot(FP,color='blue')
-ax1.plot(TN,color='green')
-ax1.plot(FN,color='black')
-ax1.set_xlabel('Threshold')
-ax1.set_ylabel('Number of pixels')
+# fig = plt.figure()
+# ax1 = fig.add_subplot(1,2,1)
+# plt.title('TP FN TN FP for ONE GAUSSIAN')
+# ax1.plot(TP,color='red')
+# ax1.plot(FP,color='blue')
+# ax1.plot(TN,color='green')
+# ax1.plot(FN,color='black')
+# ax1.set_xlabel('Threshold')
+# ax1.set_ylabel('Number of pixels')
 
-
-ax2 = fig.add_subplot(1,2,2)
-plt.title('F-measure depending on threshold')
-ax2.plot(F1,color='red')
-ax2.plot(F1_adaptative,color='blue')
-ax2.set_xlabel('Threshold')
-ax2.set_ylabel('F1-Measure')
+# ax2 = fig.add_subplot(1,2,2)
+# plt.title('F-measure depending on threshold')
+# ax2.plot(F1,color='red')
+# ax2.plot(F1_adaptative,color='blue')
+# ax2.set_xlabel('Threshold')
+# ax2.set_ylabel('F1-Measure')
+# fig.show()
 
 # Task 1.3 Precision vs Recall curve and AUC
-fig = plt.figure()
-ax1 = fig.add_subplot(1,2,1)
-plt.title('Precision vs recall')
-ax1.plot(recall, precision,color='green')
+# fig = plt.figure()
+# ax1 = fig.add_subplot(1,2,1)
+# plt.title('Precision vs recall')
+# ax1.plot(recall, precision,color='green')
 
 #ax1 = fig.add_subplot(1,2,2)
 #plt.title('Area under the curve')

@@ -49,7 +49,7 @@ def evaluateFolder(folderPath):
     results = dict()
     numItems = len(queryFiles)
     for idx, queryFile in enumerate(queryFiles[:]):
-        print str(1+idx) + "/" + str(len(queryFiles))
+        # print str(1+idx) + "/" + str(len(queryFiles))
         file_name = queryFile
         #gtFile = conf.gtFolder + conf.gtPrefix + file_name[file_name.rfind('/')+3:-4] + conf.gtExtension
         # Ubuntu
@@ -117,8 +117,8 @@ def evaluateFolder(folderPath):
     else:
         F1 = 0.0
 
-    print TP,TN,FP,FN
-    print precision,recall,F1
+    # print TP,TN,FP,FN
+    # print precision,recall,F1
     
     return TP,TN,FP,FN,precision,recall,F1
 
