@@ -44,7 +44,7 @@ for alfa in alfas:
     datasetGT  = "HighwayGT"
     colorSpace = 'gray' # 'gray', 'HSV', 'YCrCb', 'BGR'
     gm.obtainGaussianModell(dataset, datasetGT, colorSpace, alfa)
-    TPi,TNi,FPi,FNi,precisioni,recalli,F1i,auci = ev.evaluateFolder(gM_path)
+    TPi,TNi,FPi,FNi,precisioni,recalli,F1i,auci = ev.evaluateFolder(gM_path, datasetGT)
 
     TP.append(TPi)
     TN.append(TNi)
@@ -56,9 +56,9 @@ for alfa in alfas:
     auc.append(auci)
 
     # Adaptative gaussian
-    mu, sigma = ag.obtainGaussianModell("Highway")
-    ag.foreground_substraction("Highway", "HighwayGT", mu, sigma, alfa, 0) # rho equal to 0, in order to find the optimal alpha
-    aux,aux,aux,aux,aux,aux,F1i_adaptative,aux = ev.evaluateFolder(aG_path)
+    mu, sigma = ag.obtainGaussianModell(dataset)
+    ag.foreground_substraction(dataset, datasetGT, mu, sigma, alfa, 0) # rho equal to 0, in order to find the optimal alpha
+    aux,aux,aux,aux,aux,aux,F1i_adaptative,aux = ev.evaluateFolder(aG_path, datasetGT)
     F1_adaptative.append(F1i_adaptative)
 
     if F1i_adaptative > bestF1:
@@ -72,9 +72,9 @@ for alfa in alfas:
 bestF1 = 0
 for rho in rhos:
     # Adaptative gaussian
-    mu, sigma = ag.obtainGaussianModell("Highway")
-    ag.foreground_substraction("Highway", "HighwayGT", mu, sigma, optAlpha, rho)
-    aux, aux, aux, aux, aux, aux, F1, aux = ev.evaluateFolder(aG_path)
+    mu, sigma = ag.obtainGaussianModell(dataset)
+    ag.foreground_substraction(dataset, datasetGT, mu, sigma, optAlpha, rho)
+    aux, aux, aux, aux, aux, aux, F1, aux = ev.evaluateFolder(aG_path, datasetGT)
 
     if F1 > bestF1:
         bestF1 = F1
