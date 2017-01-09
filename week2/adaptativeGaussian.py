@@ -39,9 +39,7 @@ def obtainGaussianModell(ID):
 
     return mu, sigma
     
-def foreground_substraction(ID, IDGT, mu, sigma, alpha):
-
-    rho = conf.rho
+def foreground_substraction(ID, IDGT, mu, sigma, alpha, rho):
 
     folder = conf.folders[ID]
     folderGT = conf.folders[IDGT]
@@ -111,5 +109,6 @@ if __name__ == "__main__":
     dataset    = "Highway"
     datasetGT  = "HighwayGT"
     alpha = conf.alfa
+    rho = conf.rho
     mu, sigma = obtainGaussianModell(dataset)
-    foreground_substraction(dataset, datasetGT, mu, sigma, alpha)
+    foreground_substraction(dataset, datasetGT, mu, sigma, alpha, rho)

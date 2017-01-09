@@ -8,6 +8,7 @@ import adaptativeGaussian as ag
 import matplotlib.pyplot as plt
 
 alfas = np.arange(0,15)
+rhos = np.arange(0,1.1,0.1)
 TP = []
 TN = []
 FP = []
@@ -16,6 +17,8 @@ precision = []
 recall = []
 F1 = []
 F1_adaptative = []
+bestF1 = 0
+optAlpha = 0
 
 # Compute the evaluation
 for alfa in alfas:
@@ -37,14 +40,31 @@ for alfa in alfas:
 
     # Adaptative gaussian
     mu, sigma = ag.obtainGaussianModell("Highway")
-    ag.foreground_substraction("Highway", "HighwayGT", mu, sigma, alfa)
+    ag.foreground_substraction("Highway", "HighwayGT", mu, sigma, alfa, 0) # rho equal to 0, in order to find the optimal alpha
     aux,aux,aux,aux,aux,aux,F1i_adaptative = ev.evaluateFolder("./results/imagesAdaptativeGaussian/")
     F1_adaptative.append(F1i_adaptative)
 
-    print ('--- Alfa: ' + str(alfa))
+    if F1i_adaptative > bestF1:
+        bestF1 = F1i_adaptative
+        optAlpha = alfa
+
+    print ('--- Alfa: ' + str(alfa) + ' --- Rho: 0')
     print ('--- F1 Gaussian Model: ' + str(F1i))
     print ('--- F1 Adaptative Gaussian Model: ' + str(F1i_adaptative))
 
+bestF1 = 0
+for rho in rhos:
+    # Adaptative gaussian
+    mu, sigma = ag.obtainGaussianModell("Highway")
+    ag.foreground_substraction("Highway", "HighwayGT", mu, sigma, optAlpha, rho)
+    aux, aux, aux, aux, aux, aux, F1 = ev.evaluateFolder("./results/imagesAdaptativeGaussian/")
+
+    if F1 > bestF1:
+        bestF1 = F1
+        optRho = rho
+
+    print ('--- Rho: ' + str(rho) + ' --- ' + 'optimal Alpha: ' + str(optAlpha))
+    print ('--- F1 Adaptative Gaussian Model: ' + str(F1))
 
 # Plot the features
 # fig = plt.figure()
