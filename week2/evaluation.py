@@ -18,7 +18,7 @@ import configuration as conf
 # Evaluates one single frame, according to the mapping defined in the
 # configuration file. Returns the confusion matrix, precision, recall and f-1
 # score for all the labels. (The background is on the last one)
-def evaluateImage(queryFile,gtFile):
+def evaluateImage(queryFile,gtFile,computeAUC):
     queryImg = cv2.imread(queryFile,0)
     gt = cv2.imread(gtFile,0)
 
@@ -40,7 +40,11 @@ def evaluateImage(queryFile,gtFile):
 
     confMat = confusion_matrix(gtVector,predictionVector)
     precision, recall, fscore, support = score(gtVector, predictionVector)
-    auc = roc_auc_score(gtVector, predictionVector)
+    
+    if computeAUC:
+        auc = roc_auc_score(gtVector, predictionVector)
+    else:
+        auc = 0.0
     
     return confMat,precision,recall,fscore,auc
 
@@ -62,7 +66,10 @@ def evaluateFolder(folderPath, datasetGT="HighwayGT"):
         # print ('===================')
         # print (gtFile)
         
-        confusion,precision,recall,f1,auc = evaluateImage(queryFile,gtFile)
+        if datasetGT == "TrafficGT":
+            confusion,precision,recall,f1,auc = evaluateImage(queryFile, gtFile, False)
+        else:
+            confusion,precision,recall,f1,auc = evaluateImage(queryFile, gtFile, True)
         accuracy = float(confusion.trace())/np.sum(confusion)
         results[queryFile[len(folderPath):]] = {"Confusion Matrix":confusion.tolist(),"Precision":precision.tolist(),"Recall":recall.tolist(),"Accuracy":accuracy,"Fscore":f1.tolist()}
 
