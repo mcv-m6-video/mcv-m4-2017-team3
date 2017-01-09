@@ -50,6 +50,7 @@ def evaluateFolder(folderPath):
     queryFiles = sorted(glob.glob(folderPath + "*"))
     results = dict()
     numItems = len(queryFiles)
+    auc = 0.0
     for idx, queryFile in enumerate(queryFiles[:]):
         # print str(1+idx) + "/" + str(len(queryFiles))
         file_name = queryFile
