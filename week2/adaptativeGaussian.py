@@ -65,6 +65,7 @@ def foreground_substraction(ID, IDGT, mu, sigma, alpha, rho):
 
     #Foreground substraction
     for idx in range(max(0,int(nFrames * trainingPercentage)),nFrames):
+
         frame = cv2.imread(framesFiles[idx])
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
@@ -75,14 +76,13 @@ def foreground_substraction(ID, IDGT, mu, sigma, alpha, rho):
         out = out.astype(np.uint8)
 
         muFlat       = mu.ravel()
-        sigmaFlat    = sigma.ravel()
+        sigmaFlat    = (sigma.ravel())**2
         outFlat      = out.ravel()
         frameFlat    = frame.ravel()
-        updateValues = np.where(outFlat==0)
-        for i in range(0, len(updateValues[0])):
-            # Update parameters
-            muFlat[updateValues[0][i]]    = rho * frameFlat[updateValues[0][i]] + (1 - rho) * muFlat[updateValues[0][i]]
-            sigmaFlat[updateValues[0][i]] = rho * (frameFlat[updateValues[0][i]] - muFlat[updateValues[0][i]]) ** 2 + (1 - rho) * sigmaFlat[updateValues[0][i]]
+
+        muFlat = np.multiply(outFlat,muFlat) + np.multiply((rho * frameFlat + (1 - rho) * muFlat),(1-outFlat))
+        sigmaFlat = np.multiply(outFlat,sigmaFlat) + np.multiply((rho * (frameFlat - muFlat)**2 + (1 - rho) * sigmaFlat),(1-outFlat))
+        sigmaFlat = np.sqrt(sigmaFlat)
 
         mu = muFlat.reshape(mu.shape[0], mu.shape[1])
         sigma = sigmaFlat.reshape(sigma.shape[0], sigma.shape[1])
@@ -113,7 +113,7 @@ def foreground_substraction(ID, IDGT, mu, sigma, alpha, rho):
         else:
             #say hello to propietary software
             cv2.imwrite('./results/imagesAdaptativeGaussianModelling/' + file_name.split('\\')[-1] , out)
-        
+
 
         videoOutput.write(instance * 255)
 
