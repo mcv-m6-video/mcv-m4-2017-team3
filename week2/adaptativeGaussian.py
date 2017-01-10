@@ -109,10 +109,11 @@ def foreground_substraction(ID, IDGT, mu, sigma, alpha, rho):
         #OS dependant writing
         if operativeSystem == 'posix':
             #posix systems go here: ubuntu, debian, linux mint, red hat, etc, even osX (iew)
-            cv2.imwrite('./results/imagesAdaptativeGaussianModelling/' + file_name.split('/')[-1] , out)
+            cv2.imwrite('./results/imagesAdaptativeGaussianModelling/' + ID + file_name.split('/')[-1] , out)
+
         else:
             #say hello to propietary software
-            cv2.imwrite('./results/imagesAdaptativeGaussianModelling/' + file_name.split('\\')[-1] , out)
+            cv2.imwrite('./results/imagesAdaptativeGaussianModelling/' + ID + file_name.split('\\')[-1] , out)
 
 
         videoOutput.write(instance * 255)

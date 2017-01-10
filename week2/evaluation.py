@@ -5,14 +5,16 @@ import numpy as np
 import glob
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import precision_recall_fscore_support as score
+from sklearn.metrics import roc_auc_score
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import json
 import collections
+import os
 
 import configuration as conf
-#import highwayEvents as ev
 
+operativeSystem = os.name
 
 # Evaluates one single frame, according to the mapping defined in the
 # configuration file. Returns the confusion matrix, precision, recall and f-1
@@ -20,46 +22,69 @@ import configuration as conf
 def evaluateImage(queryFile,gtFile):
     queryImg = cv2.imread(queryFile,0)
     gt = cv2.imread(gtFile,0)
-
     if (queryImg.size <= 0):
         print "Image not found"
         return 0
-    if (gt.size <= 0):
-        print "Groundtruth not found"
+    if (gt is None):
+        print "Groundtruth " + gtFile + " not found"
         return 0
-
 
     predictionVector = []
     gtVector = []
-
     for pixel in range(0,queryImg.size):
         predictionVector.append(queryImg.flat[pixel])
     for pixel in range(0,gt.size):
         gtVector.append(conf.highwayMapping[gt.flat[pixel]])
 
-    confMat = confusion_matrix(gtVector,predictionVector)
-    precision, recall, fscore, support = score(gtVector, predictionVector)
+    if len(set(predictionVector)) != len(set(gtVector)):
 
-    return confMat,precision,recall,fscore
+        predictionVector = [el if el != 2 else 1 for el in predictionVector]
+
+
+    confMat = confusion_matrix(gtVector,predictionVector)
+    if len(confMat) == 1:
+        if list(set(gtVector))[0] == 0:
+            confMat = np.ndarray((2,2),dtype = np.uint8)
+            TP = 0
+            TN = predictionVector.count(0)
+            FP = predictionVector.count(1)
+            FN = 0
+            confMat[0][0] = predictionVector.count(0)
+            confMat[0][1] = 0
+            confMat[1][0] = predictionVector.count(1)
+            confMat[1][1] = 0
+            precision = np.array([0, float(TP)/float(TP+FP)]) if (TP+FP) != 0 else np.array([0, 0])
+            recall = np.array([0, 0])
+            fscore = np.array([0, 0])
+    else:
+        precision, recall, fscore, support = score(gtVector, predictionVector)
+    #auc = roc_auc_score(gtVector, predictionVector)
+    auc = 0
+
+    return confMat,precision,recall,fscore,auc
 
 
 # Evaluates a whole folder, using the groundtruth and image prefixes of configuration file
-def evaluateFolder(folderPath):
-    queryFiles = sorted(glob.glob(folderPath + "*"))
+def evaluateFolder(folderPath,ID = "Highway"):
+    queryFiles = sorted(glob.glob(folderPath + ID + "*"))
     results = dict()
     numItems = len(queryFiles)
     for idx, queryFile in enumerate(queryFiles[:]):
-        # print str(1+idx) + "/" + str(len(queryFiles))
         file_name = queryFile
-        #gtFile = conf.gtFolder + conf.gtPrefix + file_name[file_name.rfind('/')+3:-4] + conf.gtExtension
-        # Ubuntu
-        # gtFile = conf.folders["HighwayGT"] + 'gt' + file_name[file_name.rfind('/')+3:-4] + '.png'
-        # Windows
-        gtFile = conf.folders["HighwayGT"] + 'gt' + file_name[file_name.rfind('\\') + 3:-4] + '.png'
+        #OS dependant writing
+        if operativeSystem == 'posix':
+            #posix systems go here: ubuntu, debian, linux mint, red hat, etc, even osX (iew)
+            base_name = file_name.split("/")[-1][2 + len(ID):-4]
+            gtFile = conf.folders[ID+"GT"] + 'gt' + base_name + '.png'
+        else:
+            #say hello to propietary software
+            base_name = file_name.split("\\")[-1][2 + len(ID):-4]
+            gtFile = conf.folders[ID+"GT"] + 'gt' + base_name + '.png'
         # print ('===================')
         # print (gtFile)
-        
-        confusion,precision,recall,f1 = evaluateImage(queryFile,gtFile)
+
+        confusion,precision,recall,f1,auc = evaluateImage(queryFile,gtFile)
+
         accuracy = float(confusion.trace())/np.sum(confusion)
         results[queryFile[len(folderPath):]] = {"Confusion Matrix":confusion.tolist(),"Precision":precision.tolist(),"Recall":recall.tolist(),"Accuracy":accuracy,"Fscore":f1.tolist()}
 
@@ -77,7 +102,7 @@ def evaluateFolder(folderPath):
             precision = float(TP)/(TP+FP)
         else:
             precision = 0.0
-        
+
         if (TP+FN) > 0.0:
             recall = float(TP)/(TP+FN)
         else:
@@ -104,22 +129,20 @@ def evaluateFolder(folderPath):
                 precision = (precision*(label) + float(TP)/(TP+FP))/(label+1)
             else:
                 precision = 0.0
-            
+
             if (TP+FN) > 0.0:
                 recall = (recall*(label) + float(TP)/(TP+FN))/(label+1)
             else:
                 recall = 0.0
 
     beta = 1
-    
+
     if (precision + recall) > 0.0:
         F1 = (1+pow(beta,2))*precision*recall/(pow(beta,2)*precision + recall)
     else:
         F1 = 0.0
 
-    # print TP,TN,FP,FN
-    # print precision,recall,F1
-    
+
     return TP,TN,FP,FN,precision,recall,F1
 
 

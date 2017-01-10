@@ -21,7 +21,7 @@ import configuration as conf
 def evaluateImage(queryFile,gtFile):
     queryImg = cv2.imread(queryFile,0)
     gt = cv2.imread(gtFile,0)
-
+    
     if (queryImg.size <= 0):
         print "Image not found"
         return 0
@@ -137,7 +137,6 @@ def temporalEvaluation():
         P  = [orderedResults[el]["Confusion Matrix"][1][1] + orderedResults[el]["Confusion Matrix"][1][0] for el in orderedResults.keys()]
         F1 = [orderedResults[el]["Fscore"][-1] for el in orderedResults.keys()]
     nSamples = len(orderedResults)
-
 
     with open("./results/test_B_results.json") as f:
         results = json.load(f)

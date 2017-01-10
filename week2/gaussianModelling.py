@@ -61,11 +61,10 @@ def obtainGaussianModell(ID, IDGT, colorSpace, alfa):
     else:
         mu = mu.reshape(frame.shape[0], frame.shape[1], frame.shape[2])
         sigma = sigma.reshape(frame.shape[0], frame.shape[1], frame.shape[2])
-    '''
+
     cv2.imwrite("results/mean-training" + str(trainingPercentage) + "-alfa-" + str(alfa) + ".png",mu.astype(np.uint8))
     cv2.imwrite("results/sigma-training" + str(trainingPercentage) + "-alfa-" + str(alfa) + ".png",sigma.astype(np.uint8))
 
-    '''
     for idx in range(max(0,int(nFrames * trainingPercentage)),nFrames):
         frame = cv2.imread(framesFiles[idx])
         if colorSpace != 'BGR':
@@ -90,7 +89,8 @@ def obtainGaussianModell(ID, IDGT, colorSpace, alfa):
         groundTruth = groundTruth.astype(np.uint8)
 
         instance = np.stack([out, out, outError], axis=-1)
-        
+
+
         # cv2.imshow("OutputColor", instance * 255)
         # cv2.imshow("Image", frame)
         # # cv2.imshow("Output", out * 255)
@@ -107,17 +107,18 @@ def obtainGaussianModell(ID, IDGT, colorSpace, alfa):
         #OS dependant writing
         if operativeSystem == 'posix':
             #posix systems go here: ubuntu, debian, linux mint, red hat, etc, even osX (iew)
-            cv2.imwrite('./results/imagesGaussianModelling/' + file_name.split('/')[-1] , out)
+            cv2.imwrite('./results/imagesGaussianModelling/' + ID + file_name.split('/')[-1] , out)
+
         else:
             #say hello to propietary software
-            cv2.imwrite('./results/imagesGaussianModelling/' + file_name.split('\\')[-1] , out)
+            cv2.imwrite('./results/imagesGaussianModelling/' + ID + file_name.split('\\')[-1] , out)
 
 
     videoOutput.release()
 
 
 if __name__ == "__main__":
-    dataset    = "Highway"
-    datasetGT  = "HighwayGT"
-    colorSpace = 'YCrCb' # 'gray', 'HSV', 'YCrCb', 'BGR'
+    dataset    = "Traffic"
+    datasetGT  = "TrafficGT"
+    colorSpace = 'gray' # 'gray', 'HSV', 'YCrCb', 'BGR'
     obtainGaussianModell(dataset, datasetGT, colorSpace, conf.alfa)
