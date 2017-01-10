@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import os
 import evaluation as ev
 import configuration as conf
 import numpy as np
@@ -10,6 +11,7 @@ import matplotlib.pyplot as plt
 from numpy import trapz
 import os
 
+<<<<<<< HEAD
 
 def evaluateTask1(colorSpace = 'gray'):
     datasets =['Fall'] # ["Highway","Fall","Traffic"]
@@ -167,27 +169,107 @@ def evaluateResults():
 
         print ('--- Rho: ' + str(rho) + ' --- ' + 'optimal Alpha: ' + str(optAlpha))
         print ('--- F1 Adaptative Gaussian Model: ' + str(F1))
+=======
+alfas = np.arange(0,15)
+rhos = np.arange(0,1.1,0.1)
+TP = []
+TN = []
+FP = []
+FN = []
+precision = []
+recall = []
+F1 = []
+F1_adaptative = []
+auc = []
+bestF1 = 0
+optAlpha = 0
 
+# Check if 'results' folder exists.
+results_path = "./results"
+if not os.path.exists(results_path):
+    os.makedirs(results_path)
+
+gM_path = results_path + "/imagesGaussianModelling/"
+if not os.path.exists(gM_path):
+    os.makedirs(gM_path)
+
+aG_path = results_path + "/imagesAdaptativeGaussianModelling/" #"/imagesAdaptativeGaussian/"
+if not os.path.exists(aG_path):
+    os.makedirs(aG_path)
+
+
+# Compute the evaluation
+for alfa in alfas:
+    
+    # One gaussian
+    dataset    = "Highway"
+    datasetGT  = "HighwayGT"
+    colorSpace = 'gray' # 'gray', 'HSV', 'YCrCb', 'BGR'
+    gm.obtainGaussianModell(dataset, datasetGT, colorSpace, alfa)
+    TPi,TNi,FPi,FNi,precisioni,recalli,F1i,auci = ev.evaluateFolder(gM_path, datasetGT)
+
+    TP.append(TPi)
+    TN.append(TNi)
+    FP.append(FPi)
+    FN.append(FNi)
+    precision.append(precisioni)
+    recall.append(recalli)
+    F1.append(F1i)
+    auc.append(auci)
+
+    # Adaptative gaussian
+    mu, sigma = ag.obtainGaussianModell(dataset)
+    ag.foreground_substraction(dataset, datasetGT, mu, sigma, alfa, 0) # rho equal to 0, in order to find the optimal alpha
+    aux,aux,aux,aux,aux,aux,F1i_adaptative,aux = ev.evaluateFolder(aG_path, datasetGT)
+    F1_adaptative.append(F1i_adaptative)
+
+    if F1i_adaptative > bestF1:
+        bestF1 = F1i_adaptative
+        optAlpha = alfa
+
+    print ('--- Alfa: ' + str(alfa) + ' --- Rho: 0')
+    print ('--- F1 Gaussian Model: ' + str(F1i))
+    print ('--- F1 Adaptative Gaussian Model: ' + str(F1i_adaptative))
+
+bestF1 = 0
+for rho in rhos:
+    # Adaptative gaussian
+    mu, sigma = ag.obtainGaussianModell(dataset)
+    ag.foreground_substraction(dataset, datasetGT, mu, sigma, optAlpha, rho)
+    aux, aux, aux, aux, aux, aux, F1, aux = ev.evaluateFolder(aG_path, datasetGT)
+
+    if F1 > bestF1:
+        bestF1 = F1
+        optRho = rho
+
+    print ('--- Rho: ' + str(rho) + ' --- ' + 'optimal Alpha: ' + str(optAlpha))
+    print ('--- F1 Adaptative Gaussian Model: ' + str(F1))
+>>>>>>> 8402b8aa56e0030d65c95569ee1003ddea19939f
+
+'''
 # Plot the features
-# fig = plt.figure()
-# ax1 = fig.add_subplot(1,2,1)
-# plt.title('TP FN TN FP for ONE GAUSSIAN')
-# ax1.plot(TP,color='red')
-# ax1.plot(FP,color='blue')
-# ax1.plot(TN,color='green')
-# ax1.plot(FN,color='black')
-# ax1.set_xlabel('Threshold')
-# ax1.set_ylabel('Number of pixels')
+fig = plt.figure()
+ax1 = fig.add_subplot(1,2,1)
+plt.title('TP FN TN FP for ONE GAUSSIAN')
+ax1.plot(TP,color='red')
+ax1.plot(FP,color='blue')
+ax1.plot(TN,color='green')
+ax1.plot(FN,color='black')
+ax1.set_xlabel('Threshold')
+ax1.set_ylabel('Number of pixels')
 
-# ax2 = fig.add_subplot(1,2,2)
-# plt.title('F-measure depending on threshold')
-# ax2.plot(F1,color='red')
-# ax2.plot(F1_adaptative,color='blue')
-# ax2.set_xlabel('Threshold')
-# ax2.set_ylabel('F1-Measure')
-# fig.show()
+ax2 = fig.add_subplot(1,2,2)
+plt.title('F-measure depending on threshold')
+ax2.plot(F1,color='red')
+ax2.plot(F1_adaptative,color='blue')
+ax2.set_xlabel('Threshold')
+ax2.set_ylabel('F1-Measure')
+#fig.show()
+
+fig.savefig('Plot1.png')
 
 # Task 1.3 Precision vs Recall curve and AUC
+<<<<<<< HEAD
 # fig = plt.figure()
 # ax1 = fig.add_subplot(1,2,1)
 # plt.title('Precision vs recall')
@@ -202,3 +284,16 @@ def evaluateResults():
 
 if __name__ == "__main__":
     evaluateResults()
+=======
+fig2 = plt.figure()
+ax1 = fig2.add_subplot(1,2,1)
+plt.title('Precision vs recall')
+ax1.plot(recall, precision,color='green')
+
+ax2 = fig2.add_subplot(1,2,2)
+plt.title('Area under the curve')
+ax2.plot(auc, precision,color='green')
+
+fig2.savefig('Plot2.png')
+'''
+>>>>>>> 8402b8aa56e0030d65c95569ee1003ddea19939f

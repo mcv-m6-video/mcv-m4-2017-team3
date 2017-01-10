@@ -42,6 +42,7 @@ def evaluateImage(queryFile,gtFile):
 
 
     confMat = confusion_matrix(gtVector,predictionVector)
+<<<<<<< HEAD
     if len(confMat) == 1:
         if list(set(gtVector))[0] == 0:
             confMat = np.ndarray((2,2),dtype = np.uint8)
@@ -61,16 +62,33 @@ def evaluateImage(queryFile,gtFile):
     #auc = roc_auc_score(gtVector, predictionVector)
     auc = 0
 
+=======
+    precision, recall, fscore, support = score(gtVector, predictionVector)
+    
+    try:
+        auc = roc_auc_score(gtVector, predictionVector)
+    except:
+        print "Warning: only one class present in y_true. ROC AUC score is not defined in that case."
+        auc = 0.0
+    
+>>>>>>> 8402b8aa56e0030d65c95569ee1003ddea19939f
     return confMat,precision,recall,fscore,auc
 
 
 # Evaluates a whole folder, using the groundtruth and image prefixes of configuration file
+<<<<<<< HEAD
 def evaluateFolder(folderPath,ID = "Highway"):
     queryFiles = sorted(glob.glob(folderPath + ID + "*"))
+=======
+def evaluateFolder(folderPath, datasetGT="HighwayGT"):
+    queryFiles = sorted(glob.glob(folderPath + "*"))
+>>>>>>> 8402b8aa56e0030d65c95569ee1003ddea19939f
     results = dict()
     numItems = len(queryFiles)
+    auc = 0.0
     for idx, queryFile in enumerate(queryFiles[:]):
         file_name = queryFile
+<<<<<<< HEAD
         #OS dependant writing
         if operativeSystem == 'posix':
             #posix systems go here: ubuntu, debian, linux mint, red hat, etc, even osX (iew)
@@ -85,6 +103,17 @@ def evaluateFolder(folderPath,ID = "Highway"):
 
         confusion,precision,recall,f1,auc = evaluateImage(queryFile,gtFile)
 
+=======
+        #gtFile = conf.gtFolder + conf.gtPrefix + file_name[file_name.rfind('/')+3:-4] + conf.gtExtension
+        # Ubuntu
+        # gtFile = conf.folders["HighwayGT"] + 'gt' + file_name[file_name.rfind('/')+3:-4] + '.png'
+        # Windows
+        gtFile = conf.folders[datasetGT] + 'gt' + file_name[file_name.rfind('\\') + 3:-4] + '.png'
+        # print ('===================')
+        # print (gtFile)
+        
+        confusion,precision,recall,f1,auc = evaluateImage(queryFile, gtFile)
+>>>>>>> 8402b8aa56e0030d65c95569ee1003ddea19939f
         accuracy = float(confusion.trace())/np.sum(confusion)
         results[queryFile[len(folderPath):]] = {"Confusion Matrix":confusion.tolist(),"Precision":precision.tolist(),"Recall":recall.tolist(),"Accuracy":accuracy,"Fscore":f1.tolist()}
 
@@ -142,8 +171,15 @@ def evaluateFolder(folderPath,ID = "Highway"):
     else:
         F1 = 0.0
 
+<<<<<<< HEAD
 
     return TP,TN,FP,FN,precision,recall,F1
+=======
+    # print TP,TN,FP,FN
+    # print precision,recall,F1
+    
+    return TP,TN,FP,FN,precision,recall,F1,auc
+>>>>>>> 8402b8aa56e0030d65c95569ee1003ddea19939f
 
 
 # Plots the evolution of the video sequence (task 2 basically)
