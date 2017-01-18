@@ -11,7 +11,8 @@ import matplotlib.patches as mpatches
 import json
 import collections
 import os
-
+import sys
+sys.path.append('../')
 import configuration as conf
 
 operativeSystem = os.name
@@ -31,18 +32,19 @@ def evaluateImage(queryFile,gtFile):
 
     predictionVector = []
     gtVector = []
+    predictionValues = np.unique(queryImg).tolist()
+    if predictionValues == [0,255]:
+        queryImg = queryImg/255
     for pixel in range(0,queryImg.size):
         predictionVector.append(queryImg.flat[pixel])
     for pixel in range(0,gt.size):
-        gtVector.append(conf.highwayMapping[gt.flat[pixel]])
+        gtVector.append(conf.mapping[gt.flat[pixel]])
 
     if len(set(predictionVector)) != len(set(gtVector)):
 
         predictionVector = [el if el != 2 else 1 for el in predictionVector]
 
-
     confMat = confusion_matrix(gtVector,predictionVector)
-<<<<<<< HEAD
     if len(confMat) == 1:
         if list(set(gtVector))[0] == 0:
             confMat = np.ndarray((2,2),dtype = np.uint8)
@@ -59,36 +61,23 @@ def evaluateImage(queryFile,gtFile):
             fscore = np.array([0, 0])
     else:
         precision, recall, fscore, support = score(gtVector, predictionVector)
-    #auc = roc_auc_score(gtVector, predictionVector)
-    auc = 0
-
-=======
-    precision, recall, fscore, support = score(gtVector, predictionVector)
-    
     try:
         auc = roc_auc_score(gtVector, predictionVector)
     except:
         print "Warning: only one class present in y_true. ROC AUC score is not defined in that case."
         auc = 0.0
-    
->>>>>>> 8402b8aa56e0030d65c95569ee1003ddea19939f
+
     return confMat,precision,recall,fscore,auc
 
 
 # Evaluates a whole folder, using the groundtruth and image prefixes of configuration file
-<<<<<<< HEAD
 def evaluateFolder(folderPath,ID = "Highway"):
     queryFiles = sorted(glob.glob(folderPath + ID + "*"))
-=======
-def evaluateFolder(folderPath, datasetGT="HighwayGT"):
-    queryFiles = sorted(glob.glob(folderPath + "*"))
->>>>>>> 8402b8aa56e0030d65c95569ee1003ddea19939f
     results = dict()
     numItems = len(queryFiles)
     auc = 0.0
     for idx, queryFile in enumerate(queryFiles[:]):
         file_name = queryFile
-<<<<<<< HEAD
         #OS dependant writing
         if operativeSystem == 'posix':
             #posix systems go here: ubuntu, debian, linux mint, red hat, etc, even osX (iew)
@@ -100,20 +89,8 @@ def evaluateFolder(folderPath, datasetGT="HighwayGT"):
             gtFile = conf.folders[ID+"GT"] + 'gt' + base_name + '.png'
         # print ('===================')
         # print (gtFile)
-
         confusion,precision,recall,f1,auc = evaluateImage(queryFile,gtFile)
 
-=======
-        #gtFile = conf.gtFolder + conf.gtPrefix + file_name[file_name.rfind('/')+3:-4] + conf.gtExtension
-        # Ubuntu
-        # gtFile = conf.folders["HighwayGT"] + 'gt' + file_name[file_name.rfind('/')+3:-4] + '.png'
-        # Windows
-        gtFile = conf.folders[datasetGT] + 'gt' + file_name[file_name.rfind('\\') + 3:-4] + '.png'
-        # print ('===================')
-        # print (gtFile)
-        
-        confusion,precision,recall,f1,auc = evaluateImage(queryFile, gtFile)
->>>>>>> 8402b8aa56e0030d65c95569ee1003ddea19939f
         accuracy = float(confusion.trace())/np.sum(confusion)
         results[queryFile[len(folderPath):]] = {"Confusion Matrix":confusion.tolist(),"Precision":precision.tolist(),"Recall":recall.tolist(),"Accuracy":accuracy,"Fscore":f1.tolist()}
 
@@ -121,7 +98,7 @@ def evaluateFolder(folderPath, datasetGT="HighwayGT"):
     with open(conf.outputFile,"w") as f:
         json.dump(results,f)
 
-    if (conf.highwayMapping["Classes"] == 2):
+    if (conf.mapping["Classes"] == 2):
         TN = sum([results[el]["Confusion Matrix"][0][0] for el in results.keys()])
         FP = sum([results[el]["Confusion Matrix"][0][1] for el in results.keys()])
         FN = sum([results[el]["Confusion Matrix"][1][0] for el in results.keys()])
@@ -146,9 +123,9 @@ def evaluateFolder(folderPath, datasetGT="HighwayGT"):
         precision = 0
         recall = 0
         # Precision and recall for each label:
-        for label in range(0,conf.highwayMapping["Classes"]):
+        for label in range(0,conf.mapping["Classes"]):
             TP = sum([results[el]["Confusion Matrix"][label][label] for el in results.keys()])
-            for i in range(0,conf.highwayMapping["Classes"]):
+            for i in range(0,conf.mapping["Classes"]):
                 if(i == label):
                     continue
                 FP += sum([results[el]["Confusion Matrix"][i][label] for el in results.keys()])
@@ -171,15 +148,8 @@ def evaluateFolder(folderPath, datasetGT="HighwayGT"):
     else:
         F1 = 0.0
 
-<<<<<<< HEAD
 
     return TP,TN,FP,FN,precision,recall,F1
-=======
-    # print TP,TN,FP,FN
-    # print precision,recall,F1
-    
-    return TP,TN,FP,FN,precision,recall,F1,auc
->>>>>>> 8402b8aa56e0030d65c95569ee1003ddea19939f
 
 
 # Plots the evolution of the video sequence (task 2 basically)
@@ -190,7 +160,7 @@ def temporalEvaluation():
         results = json.load(f)
 
     orderedResults = collections.OrderedDict(sorted(results.items()))
-    if (conf.highwayMapping["Classes"] == 2):
+    if (conf.mapping["Classes"] == 2):
         TP = [orderedResults[el]["Confusion Matrix"][1][1] for el in orderedResults.keys()]
         P  = [orderedResults[el]["Confusion Matrix"][1][1] + orderedResults[el]["Confusion Matrix"][1][0] for el in orderedResults.keys()]
         F1 = [orderedResults[el]["Fscore"][-1] for el in orderedResults.keys()]
@@ -201,7 +171,7 @@ def temporalEvaluation():
         results = json.load(f)
 
     orderedResults = collections.OrderedDict(sorted(results.items()))
-    if (conf.highwayMapping["Classes"] == 2):
+    if (conf.mapping["Classes"] == 2):
         TPb = [orderedResults[el]["Confusion Matrix"][1][1] for el in orderedResults.keys()]
 
         F1b = [orderedResults[el]["Fscore"][-1] for el in orderedResults.keys()]
@@ -251,12 +221,12 @@ def methodsComparison():
 
     for w in range(0,width-1):
         for h in range(0,height-1):
-            if(conf.highwayMapping[gt[h,w,0]] == 0):
+            if(conf.mapping[gt[h,w,0]] == 0):
                 if(imA[h,w,0] == 1):
                     imA[h,w,:] = [0,0,255]
                 if(imB[h,w,0] == 1):
                     imB[h,w,:] = [0,0,255]
-            if(conf.highwayMapping[gt[h,w,0]] == 1):
+            if(conf.mapping[gt[h,w,0]] == 1):
                 if(imA[h,w,0] == 1):
                     imA[h,w,:] = [0,255,0]
                 else:

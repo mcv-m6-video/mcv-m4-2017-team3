@@ -107,12 +107,11 @@ def obtainGaussianModell(ID, IDGT, colorSpace, alfa):
         #OS dependant writing
         if operativeSystem == 'posix':
             #posix systems go here: ubuntu, debian, linux mint, red hat, etc, even osX (iew)
-            cv2.imwrite('./results/imagesGaussianModelling/' + ID + file_name.split('/')[-1] , out)
+            cv2.imwrite('./results/imagesGaussianModelling/' + ID + file_name.split('/')[-1] + '.png', out)
 
         else:
             #say hello to propietary software
-            cv2.imwrite('./results/imagesGaussianModelling/' + ID + file_name.split('\\')[-1] , out)
-
+            cv2.imwrite('./results/imagesGaussianModelling/' + ID + file_name.split('\\')[-1] + '.png' , out)
 
     videoOutput.release()
 

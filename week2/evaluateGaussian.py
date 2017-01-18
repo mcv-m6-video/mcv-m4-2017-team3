@@ -11,8 +11,6 @@ import matplotlib.pyplot as plt
 from numpy import trapz
 import os
 
-<<<<<<< HEAD
-
 def evaluateTask1(colorSpace = 'gray'):
     datasets =['Fall'] # ["Highway","Fall","Traffic"]
     datasetsGT = [el + "GT" for el in datasets]
@@ -169,7 +167,6 @@ def evaluateResults():
 
         print ('--- Rho: ' + str(rho) + ' --- ' + 'optimal Alpha: ' + str(optAlpha))
         print ('--- F1 Adaptative Gaussian Model: ' + str(F1))
-=======
 alfas = np.arange(0,15)
 rhos = np.arange(0,1.1,0.1)
 TP = []
@@ -200,7 +197,7 @@ if not os.path.exists(aG_path):
 
 # Compute the evaluation
 for alfa in alfas:
-    
+
     # One gaussian
     dataset    = "Highway"
     datasetGT  = "HighwayGT"
@@ -244,7 +241,6 @@ for rho in rhos:
 
     print ('--- Rho: ' + str(rho) + ' --- ' + 'optimal Alpha: ' + str(optAlpha))
     print ('--- F1 Adaptative Gaussian Model: ' + str(F1))
->>>>>>> 8402b8aa56e0030d65c95569ee1003ddea19939f
 
 '''
 # Plot the features
@@ -269,7 +265,7 @@ ax2.set_ylabel('F1-Measure')
 fig.savefig('Plot1.png')
 
 # Task 1.3 Precision vs Recall curve and AUC
-<<<<<<< HEAD
+
 # fig = plt.figure()
 # ax1 = fig.add_subplot(1,2,1)
 # plt.title('Precision vs recall')
@@ -284,16 +280,14 @@ fig.savefig('Plot1.png')
 
 if __name__ == "__main__":
     evaluateResults()
-=======
-fig2 = plt.figure()
-ax1 = fig2.add_subplot(1,2,1)
-plt.title('Precision vs recall')
-ax1.plot(recall, precision,color='green')
+    fig2 = plt.figure()
+    ax1 = fig2.add_subplot(1,2,1)
+    plt.title('Precision vs recall')
+    ax1.plot(recall, precision,color='green')
 
-ax2 = fig2.add_subplot(1,2,2)
-plt.title('Area under the curve')
-ax2.plot(auc, precision,color='green')
+    ax2 = fig2.add_subplot(1,2,2)
+    plt.title('Area under the curve')
+    ax2.plot(auc, precision,color='green')
 
-fig2.savefig('Plot2.png')
+    fig2.savefig('Plot2.png')
 '''
->>>>>>> 8402b8aa56e0030d65c95569ee1003ddea19939f

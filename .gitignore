@@ -2,3 +2,5 @@ datasets/*
 week1/results/*
 week2/results/*
 week2/videos/*
+week3/results/*
+*.pyc
