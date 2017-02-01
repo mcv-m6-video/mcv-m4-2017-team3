@@ -7,17 +7,13 @@ OptimalColorSpaces = {}
 OptimalAlphaParameter = {}
 OptimalRhoParameter = {}
 folders = {}
-isShadowremoval = {}
+
 isMac = True
 
 isHoleFilling = True
-fourConnectivity = True # If it is set to False, it will be 8 connectivity
-isFilteringPerPixel = True
 isMorphology = True
-
-isShadowremoval["Highway"]   = True
-isShadowremoval["Fall"]      = False
-isShadowremoval["Traffic"]   = False
+fourConnectivity = True # If it is set to False, it will be 8 connectivity
+isShadowremoval = True
 
 noise_filter_size = 5
 vert_filter_size = 20
@@ -59,6 +55,16 @@ folders["FallGT"]  = "../../../datasetDeliver_2/fall/groundtruth/"
 folders["Traffic"]  = "../../../datasetDeliver_2/traffic/input/"
 folders["TrafficGT"]  = "../../../datasetDeliver_2/traffic/groundtruth/"
 
+folders["ownVideo"]  = "./videos/ownVideo3/"
+
+folders["45"]  = "../../../datasetDeliver_2/kitty/45/"
+folders["45GT"]  = "../../../datasetDeliver_2/kitty/45/gt/000045_10.png"
+
+folders["157"]  = "../../../datasetDeliver_2/kitty/157/"
+folders["157GT"]  = "../../../datasetDeliver_2/kitty/157/gt/000157_10.png"
+
+
+
 # Evaluation
 
 # Results logging
@@ -99,3 +105,15 @@ highwayBinaryMapping1.update({"Classes":2})
 
 # Mapping used. Change this line to change the mapping
 mapping = highwayBinaryMapping1
+
+
+################### OF  ####################
+OFblockSize = 16
+OFsearchArea = 16
+
+
+################# Stab #####################
+block_size = 16
+area_size = 16
+compensation = 'backward'  # or 'forward'
+isReferenceImageFixed = False
