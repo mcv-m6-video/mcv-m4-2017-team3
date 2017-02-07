@@ -3,8 +3,30 @@ layout: default
 title: M4. Video Analysis
 ---
 <div class="blurb">
-	<h1>Introduction</h1>
-	<p>Hi there, we are group 3: Alejandro Nespereira, Marc Carné, Axel Barroso and Sergio Sancho.</p>
+	<h1>Abstract</h1>
+	<p></p>
 	<h1>Title 1</h1>
 	<p>Road traffic detection and monitorization is [...] </p>
+
+	<h1>Custom implementations</h1>
+	<p> During the development of the project, and as the only team of 2017 implementing our system in Python, we found several function implementations that were easily done in MATLAB but did not have a good Python counterpart.
+		Some of these alternatives presented additional issues that hintered our progress. Some of these issues were difficult installations, the lack of a multiplatform implementation, lack of easy to use documentation or simply absence.
+		We made the best effort to try to overcome these obstacles, and for the use of the next master students, we have created a small list with all the functionalities OpenCV we could not find in OpenCV or standard Python libraries:
+		<ul>
+			<li><b> Kalman Filter </b>: we implemented our own.
+			<li><b> MATLAB function bwareaopen </b>: we implented our own.
+			<li><b> Hole filling </b>: we implemented our own with the help of scipy-image library.
+			<li><b> Lucas Kanade </b>: although OpenCV offers a sparse LK version, it lacks a dense counterpart. Moreover, there are no more Dense Optical Flow implementations in OpenCV, apart from Farneback. 
+		</ul>
+		Despite these lacks, we enjoyed developing our code in Python, as we believ is a more robust and accesible language, aimed at a wider range of tasks than MATLAB. The access to some of its powerful libraries made some of the very needed non computer vision tasks
+		such managing files or communicating with the Operative System much easier.
+		Needless to say, we are open to point at the specific code locations where these problems were solved.
+
+	<h1>Authors and contributors</h1>
+	<ul>
+	<li>Axel Barroso (<a href="https://github.com/axelBarroso" class="user-mention">@axelBarroso</a>)</li>
+	<li>Sergio Asensio(<a href="https://github.com/sergiosanchoasensio" class="user-mention">@sergiosanchoasesnsio</a>)</li>
+	<li>Alejandro Nespereira (<a href="https://github.com/alejandronespereira" class="user-mention">@alejandronespereir</a>)</li>
+	<li>Marc Carné (<a href="https://github.com/marccarne" class="user-mention">@marccarne</a>)</li>
+	</ul>
 </div><!-- /.blurb -->
