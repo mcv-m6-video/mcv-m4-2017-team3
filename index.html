@@ -6,8 +6,11 @@ title: M4. Video Analysis
 	<h1>Abstract</h1>
 	<p></p>
 	<h1>Title 1</h1>
-	<p>Road traffic detection and monitorization is [...] </p>
-
+	<p>Project description</p>
+	<p> This page serves as an overview of the project developed over the course of M4. The goal of the project is to count moving cars in a highway and estimate their speed. To do so we have explored the well known approach of background modelling to retrieve the moving objects.
+		Using morphological operations we have been able to substantially improve both the numerical and visual performances of our system. We conducted a study of stabilization to improve the image quality reducing the effect of wind and pulse that were adding a jitter to the recordings.
+		Finally, we developed from zero a Kalman filter to estimate the position and speed over the road of each car. The result is an autonomous system that can be used for road surveillance and traffic monitoring in outdoors environments.
+	</p>
 	<h1>Custom implementations</h1>
 	<p> During the development of the project, and as the only team of 2017 implementing our system in Python, we found several function implementations that were easily done in MATLAB but did not have a good Python counterpart.
 		Some of these alternatives presented additional issues that hintered our progress. Some of these issues were difficult installations, the lack of a multiplatform implementation, lack of easy to use documentation or simply absence.
@@ -16,7 +19,7 @@ title: M4. Video Analysis
 			<li><b> Kalman Filter </b>: we implemented our own.
 			<li><b> MATLAB function bwareaopen </b>: we implented our own.
 			<li><b> Hole filling </b>: we implemented our own with the help of scipy-image library.
-			<li><b> Lucas Kanade </b>: although OpenCV offers a sparse LK version, it lacks a dense counterpart. Moreover, there are no more Dense Optical Flow implementations in OpenCV, apart from Farneback. 
+			<li><b> Lucas Kanade </b>: although OpenCV offers a sparse LK version, it lacks a dense counterpart. Moreover, there are no more Dense Optical Flow implementations in OpenCV, apart from Farneback.
 		</ul>
 		Despite these lacks, we enjoyed developing our code in Python, as we believ is a more robust and accesible language, aimed at a wider range of tasks than MATLAB. The access to some of its powerful libraries made some of the very needed non computer vision tasks
 		such managing files or communicating with the Operative System much easier.
@@ -26,7 +29,7 @@ title: M4. Video Analysis
 	<ul>
 	<li>Axel Barroso (<a href="https://github.com/axelBarroso" class="user-mention">@axelBarroso</a>)</li>
 	<li>Sergio Asensio(<a href="https://github.com/sergiosanchoasensio" class="user-mention">@sergiosanchoasesnsio</a>)</li>
-	<li>Alejandro Nespereira (<a href="https://github.com/alejandronespereira" class="user-mention">@alejandronespereir</a>)</li>
+	<li>Alejandro Nespereira (<a href="https://github.com/alejandronespereira" class="user-mention">@alejandronespereira</a>)</li>
 	<li>Marc Carné (<a href="https://github.com/marccarne" class="user-mention">@marccarne</a>)</li>
 	</ul>
 </div><!-- /.blurb -->
