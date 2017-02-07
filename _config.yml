@@ -1,1 +1,5 @@
+title: Video surveillance for road traffic monitoring
+description: Car tracking and speed estimator
+markdown: kramdown
+permalink: /blog/:year/:month/:day/:title
 theme: jekyll-theme-cayman
