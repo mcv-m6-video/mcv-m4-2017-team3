@@ -1,6 +1,4 @@
-## Link: https://m4-team3-2016.github.io/
-## Post: https://m4-team3-2016.github.io/2017/02/07/traffic-velocity-detector
-## Tutorial: http://jmcglone.com/guides/github-pages/
+## Link: https://mcv-m4-video.github.io/mcv-m4-2017-team3/
 
 ## Welcome to GitHub Pages
 
